@@ -3,6 +3,9 @@
   <head>
     <title>@monaco-editor/react - CND demo</title>
 
+    <!-- Styles -->
+    <link rel="stylesheet" href="./index.css">
+
     <!-- Configs -->
     <script type="text/javascript">
       const txtUrl = "https://raw.githubusercontent.com/chrischow/ravenite/main/prod-build/txt/";
@@ -55,6 +58,11 @@
       loadWords("state-local.min", false);
       loadWords("monaco-loader.min", false);
       loadWords("monaco-react.min", false);
+      loadWords("loader.min", false);
+
+      // References
+      useState = React.useState;
+      Editor = monaco_react.default;
     </script>
     
   </head>
@@ -145,6 +153,8 @@
           </div>
         );
       }
+      // Render
+      ReactDOM.render(<App />, document.getElementById("root"));
     </script>
   </body>
 </html>
