@@ -1,6 +1,10 @@
 import "./App.css";
 import { useState, useEffect } from "react";
-import Editor, { useMonaco } from "@monaco-editor/react";
+import Editor, { useMonaco, loader } from "@monaco-editor/react";
+import * as monaco from "monaco-editor";
+
+loader.config({ monaco });
+
 
 const txtUrl =
   "https://raw.githubusercontent.com/chrischow/project-ace/main/rokr/components/";
@@ -82,7 +86,7 @@ function App() {
             */"
             defaultLanguage="javascript"
             theme="vs-dark"
-            value={code}
+            // value={code}
           />
         </div>
       </div>

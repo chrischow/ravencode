@@ -3,10 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@monaco-editor/react": "^4.4.4",
+    "@craco/craco": "^6.4.3",
+    "@monaco-editor/react": "^4.4.5",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.1.1",
     "@testing-library/user-event": "^13.5.0",
+    "monaco-editor-webpack-plugin": "^7.0.1",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "react-scripts": "5.0.1",
@@ -16,7 +18,10 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "cracoStart": "craco start",
+    "cracoBuild": "craco build",
+    "postcracoBuild": "./postbuild.sh"
   },
   "eslintConfig": {
     "extends": [
