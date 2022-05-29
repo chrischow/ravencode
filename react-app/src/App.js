@@ -43,6 +43,7 @@ const allLanguages = [
   "python",
   "sql",
   "powerquery",
+  "markdown"
 ]
 
 function App() {
@@ -179,7 +180,6 @@ function App() {
               height="90vh"
               defaultValue="/** CODE
               */"
-              defaultLanguage="javascript"
               language={language}
               theme="vs-dark"
               onValidate={handleEditorValidation}
