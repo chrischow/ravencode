@@ -26,6 +26,7 @@ export default function Menubar(props) {
         return (
             <NavDropdown.Item 
                 active={x === props.language}
+                key={x}
                 eventKey={x}>
                 {x}
             </NavDropdown.Item>

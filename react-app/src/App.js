@@ -1,5 +1,5 @@
 import "./App.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Editor, { useMonaco, loader, DiffEditor } from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -52,6 +52,8 @@ function App() {
   const [diffEditor, setDiffEditor] = useState(false);
   const [language, setLanguage] = useState("javascript");
 
+  const editorRef = useRef(null);
+
   const handleUrlChange = (event) => {
     setBaseurl(event.target.value);
     console.log(event.target.value);
@@ -67,6 +69,13 @@ function App() {
       getCode(baseurl, filename, setCode);
     }
   };
+
+  function handleEditorDidMount(editor, mnc) {
+    editorRef.current = editor;
+    editor.addCommand(monaco.KeyMod.Alt | monaco.KeyMod.Shift | monaco.KeyCode.KeyF, () => {
+      editor.trigger('editor','editor.action.formatDocument');
+    })
+  }
 
   function handleEditorValidation(markers) {
     // model markers
@@ -138,6 +147,7 @@ function App() {
             onValidate={handleEditorValidation}
             value={code}
             onChange={handleCodeChange}
+            onMount={handleEditorDidMount}
           />
           }
         </div>
