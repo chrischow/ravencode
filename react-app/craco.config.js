@@ -11,7 +11,7 @@ module.exports = {
                 })],
                 [new MonacoEditorWebpackPlugin({
                     filename: "[name].worker.txt",
-                    // publicPath: "/static/js/"
+                    // publicPath: ""
                 }), "append"]
             ]
         },

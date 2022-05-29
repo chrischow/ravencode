@@ -17,13 +17,11 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "cracoStart": "craco start",
-    "cracoBuild": "craco build",
-    "postcracoBuild": "./postbuild.sh"
+    "start": "craco start",
+    "build": "craco build",
+    "test": "craco test",
+    "eject": "craco eject",
+    "postbuild": "./postbuild.sh"
   },
   "eslintConfig": {
     "extends": [
