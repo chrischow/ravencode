@@ -1,11 +1,14 @@
 import React from 'react';
-import { ToggleButton, Container, Nav, Navbar, Button } from "react-bootstrap";
+import { ToggleButton, Container, Nav, Navbar, Button, NavDropdown } from "react-bootstrap";
 import raven_logo from './raven_logo.svg';
 
 /**
  * 
  * @param {boolean} props.diffEditor If diffeditor is on
  * @param {function} props.setDiffEditor 
+ * @param {string} props.language The current Code language
+ * @param {function} props.setLanguage
+ * @param {array} props.allLanguages All the languages enabled
  * @returns 
  */
 export default function Menubar(props) {
@@ -14,6 +17,20 @@ export default function Menubar(props) {
         const {name, value, type, checked} = e.target;
         props.setDiffEditor(pData => checked);
     };
+
+    function handleLangSelect(eventKey, event) {
+        props.setLanguage(pLang => eventKey);
+    }
+
+    const navDropItems = props.allLanguages.map((x, idx) => {
+        return (
+            <NavDropdown.Item 
+                active={x === props.language}
+                eventKey={x}>
+                {x}
+            </NavDropdown.Item>
+        )
+    })
     
     return (
         <Navbar bg="dark" variant="dark">
@@ -30,7 +47,15 @@ export default function Menubar(props) {
                     <Nav
                         className="me-auto my-2 my-lg-0"
                         navbarScroll
-                    ></Nav>
+                    >
+                        <NavDropdown 
+                            title={props.language} 
+                            id="nav-dropdown"
+                            onSelect={handleLangSelect}
+                            >
+                            {navDropItems}
+                        </NavDropdown>
+                    </Nav>
                     <Nav>
                         <ToggleButton
                             id="toggle-check"

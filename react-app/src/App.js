@@ -1,6 +1,6 @@
 import "./App.css";
 import { useState, useEffect } from "react";
-import Editor, { useMonaco, loader } from "@monaco-editor/react";
+import Editor, { useMonaco, loader, DiffEditor } from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Menubar from "./components/Menubar";
@@ -24,12 +24,33 @@ const getCode = (url, filename, callback) => {
   xhr.send();
 }
 
+const languagesWithValidation = [
+  "html",
+  "javascript",
+  "typescript",
+  "json",
+  "css",
+  "less",
+  "scss"
+]
+
+const allLanguages = [
+  ...languagesWithValidation,
+  "vb",
+  "xml",
+  "yaml",
+  "python",
+  "sql",
+  "powerquery",
+]
+
 function App() {
   // State
   const [baseurl, setBaseurl] = useState(txtUrl);
   const [filename, setFilename] = useState("");
   const [code, setCode] = useState("");
   const [diffEditor, setDiffEditor] = useState(false);
+  const [language, setLanguage] = useState("javascript");
 
   const handleUrlChange = (event) => {
     setBaseurl(event.target.value);
@@ -47,9 +68,26 @@ function App() {
     }
   };
 
+  function handleEditorValidation(markers) {
+    // model markers
+    // TODO: to check for intellisense support.
+    if(language in languagesWithValidation)
+      markers.forEach(marker => console.log("onValidate:", marker.message));
+  }
+ 
+  function handleCodeChange(e) {
+    setCode(pCode => e);
+  }
+
   return (
     <div>
-      <Menubar diffEditor={diffEditor} setDiffEditor={setDiffEditor}/>
+      <Menubar 
+        diffEditor={diffEditor} 
+        setDiffEditor={setDiffEditor}
+        allLanguages={allLanguages}
+        language={language}
+        setLanguage={setLanguage}
+        />
       <div className="grid-container">
         <div>
           <div>
@@ -79,14 +117,29 @@ function App() {
           </div>
         </div>
         <div>
+          {diffEditor 
+          ? 
+          <DiffEditor
+            height="90vh"
+            modified={code}
+            original=""
+            language={language}
+            theme="vs-dark"
+
+          />
+          : 
           <Editor
             height="90vh"
             defaultValue="/** CODE
             */"
             defaultLanguage="javascript"
+            language={language}
             theme="vs-dark"
+            onValidate={handleEditorValidation}
             value={code}
+            onChange={handleCodeChange}
           />
+          }
         </div>
       </div>
     </div>
