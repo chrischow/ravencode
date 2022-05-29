@@ -25,7 +25,7 @@ module.exports = {
             const oneOfRuleIdx = webpackConfig.module.rules.findIndex(rule => !!rule.oneOf);
             webpackConfig.module.rules[oneOfRuleIdx].oneOf.push({
                 test: /\.ttf$/,
-                use:['file-loader']
+                use: ['file-loader']
             })
             // 
             // webpackConfig.module.rules[oneOfRuleIdx].oneOf.forEach(loader => {

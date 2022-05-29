@@ -2,9 +2,10 @@ import "./App.css";
 import { useState, useEffect } from "react";
 import Editor, { useMonaco, loader } from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import Menubar from "./components/Menubar";
 
 loader.config({ monaco });
-
 
 const txtUrl =
   "https://raw.githubusercontent.com/chrischow/project-ace/main/rokr/components/";
@@ -28,6 +29,7 @@ function App() {
   const [baseurl, setBaseurl] = useState(txtUrl);
   const [filename, setFilename] = useState("");
   const [code, setCode] = useState("");
+  const [diffEditor, setDiffEditor] = useState(false);
 
   const handleUrlChange = (event) => {
     setBaseurl(event.target.value);
@@ -47,10 +49,7 @@ function App() {
 
   return (
     <div>
-      <h1>RavenITE</h1>
-      <p>
-        <em>RDO's integrated text editor.</em>
-      </p>
+      <Menubar diffEditor={diffEditor} setDiffEditor={setDiffEditor}/>
       <div className="grid-container">
         <div>
           <div>
@@ -86,7 +85,7 @@ function App() {
             */"
             defaultLanguage="javascript"
             theme="vs-dark"
-            // value={code}
+            value={code}
           />
         </div>
       </div>
