@@ -61,9 +61,16 @@ function App() {
     console.log(event.target.value);
   };
   
-  const handleFilenameChange = (event) => {
-    setFilename(event.target.value);
-    console.log(event.target.value);
+  const handleCodeFileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) {
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      setCode(pCode => e.target.result);
+    }
+    reader.readAsText(file);
   };
 
   const loadCode = () => {
@@ -72,6 +79,11 @@ function App() {
     }
   };
 
+  /**
+   * To get the reference to the editor DOM object and add in key bindings
+   * @param {object} editor 
+   * @param {object} mnc 
+   */
   function handleEditorDidMount(editor, mnc) {
     editorRef.current = editor;
     editor.addCommand(monaco.KeyMod.Alt | monaco.KeyMod.Shift | monaco.KeyCode.KeyF, () => {
@@ -79,15 +91,17 @@ function App() {
     })
   };
 
+  /**
+   * Not entirely sure what this does yet.
+   * @param {object} markers 
+   */
   function handleEditorValidation(markers) {
     // model markers
-    // TODO: to check for intellisense support.
     if(language in languagesWithValidation)
       markers.forEach(marker => console.log("onValidate:", marker.message));
   };
  
   function handleFileChange(e) {
-    console.log(e);
     const file = e.target.files[0];
     if (!file) {
       return;
@@ -116,7 +130,6 @@ function App() {
         <Row>
           <Col>
             <div>
-              <h3>Directory</h3>
               <label htmlFor="baseurl">SharePoint Folder:</label>
               <input
                 id="baseurl"
@@ -126,14 +139,16 @@ function App() {
                 value={baseurl}
               ></input>
               <br />
-              <label htmlFor="filename">Filename:</label>
-              <input
-                id="filename"
-                name="filename"
-                type="text"
-                onChange={handleFilenameChange}
-              ></input>
-              <button onClick={loadCode}>Load</button>
+              <Form>
+                <Form.Group>
+                  <Form.Label>Load File</Form.Label>
+                  <Form.Control 
+                    onChange={handleCodeFileChange}
+                    type="file" 
+                    size="sm"
+                    accept=".txt"/>
+                </Form.Group>
+              </Form>
             </div>
 
             {diffEditor && 
