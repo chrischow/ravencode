@@ -1,6 +1,5 @@
 import React from 'react';
 import { ToggleButton, Container, Nav, Navbar, Button, NavDropdown } from "react-bootstrap";
-import raven_logo from './raven_logo.svg';
 
 /**
  * 
@@ -38,7 +37,7 @@ export default function Menubar(props) {
             <Container fluid>
                 <Navbar.Brand href="#home">
                     <img 
-                        src={raven_logo}
+                        src="./raven32.png"
                         height="30"
                         className='d-inline-block align-top'
                         />{' '}

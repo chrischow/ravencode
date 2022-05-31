@@ -11,7 +11,7 @@ module.exports = {
                 })],
                 [new MonacoEditorWebpackPlugin({
                     filename: "[name].worker.txt",
-                    // publicPath: ""
+                    publicPath: ""
                 }), "append"]
             ]
         },
@@ -29,7 +29,9 @@ module.exports = {
             const oneOfRuleIdx = webpackConfig.module.rules.findIndex(rule => !!rule.oneOf);
             webpackConfig.module.rules[oneOfRuleIdx].oneOf.push({
                 test: /\.ttf$/,
-                use: ['file-loader']
+                type: 'asset/inline'
+                // this is not working. must be something in react-scripts
+                // that is not inlining the file. work-around in postbuild.sh
             })
             
             webpackConfig.module.rules[oneOfRuleIdx].oneOf.forEach(loader => {
