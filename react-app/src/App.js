@@ -1,6 +1,12 @@
 import "./App.css";
-import { useState, useEffect } from "react";
-import Editor, { useMonaco } from "@monaco-editor/react";
+import { useState, useEffect, useRef } from "react";
+import Editor, { useMonaco, loader, DiffEditor } from "@monaco-editor/react";
+import * as monaco from "monaco-editor";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import Menubar from "./components/Menubar";
+import { Container, Row, Col, Form } from "react-bootstrap";
+
+loader.config({ monaco });
 
 const txtUrl =
   "https://raw.githubusercontent.com/chrischow/project-ace/main/rokr/components/";
@@ -19,20 +25,53 @@ const getCode = (url, filename, callback) => {
   xhr.send();
 }
 
+const languagesWithValidation = [
+  "html",
+  "javascript",
+  "typescript",
+  "json",
+  "css",
+  "less",
+  "scss"
+]
+
+const allLanguages = [
+  ...languagesWithValidation,
+  "vb",
+  "xml",
+  "yaml",
+  "python",
+  "sql",
+  "powerquery",
+  "markdown"
+]
+
 function App() {
   // State
   const [baseurl, setBaseurl] = useState(txtUrl);
   const [filename, setFilename] = useState("");
   const [code, setCode] = useState("");
+  const [diffEditor, setDiffEditor] = useState(false);
+  const [language, setLanguage] = useState("javascript");
+  const [originalCode, setOriginalCode] = useState("");
+
+  const editorRef = useRef(null);
 
   const handleUrlChange = (event) => {
     setBaseurl(event.target.value);
     console.log(event.target.value);
   };
   
-  const handleFilenameChange = (event) => {
-    setFilename(event.target.value);
-    console.log(event.target.value);
+  const handleCodeFileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) {
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      setCode(pCode => e.target.result);
+    }
+    reader.readAsText(file);
   };
 
   const loadCode = () => {
@@ -41,51 +80,119 @@ function App() {
     }
   };
 
+  /**
+   * To get the reference to the editor DOM object and add in key bindings
+   * @param {object} editor 
+   * @param {object} mnc 
+   */
+  function handleEditorDidMount(editor, mnc) {
+    editorRef.current = editor;
+    editor.addCommand(monaco.KeyMod.Alt | monaco.KeyMod.Shift | monaco.KeyCode.KeyF, () => {
+      editor.trigger('editor','editor.action.formatDocument');
+    })
+  };
+
+  /**
+   * Not entirely sure what this does yet.
+   * @param {object} markers 
+   */
+  function handleEditorValidation(markers) {
+    // model markers
+    if(language in languagesWithValidation)
+      markers.forEach(marker => console.log("onValidate:", marker.message));
+  };
+ 
+  function handleFileChange(e) {
+    const file = e.target.files[0];
+    if (!file) {
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      setOriginalCode(pCode => e.target.result);
+    }
+    reader.readAsText(file);
+  };
+
+  function handleCodeChange(e) {
+    setCode(pCode => e);
+  };
+
   return (
     <div>
-      <h1>RavenITE</h1>
-      <p>
-        <em>RDO's integrated text editor.</em>
-      </p>
-      <div className="grid-container">
-        <div>
-          <div>
-            <h3>Directory</h3>
-            <label htmlFor="baseurl">SharePoint Folder:</label>
-            <input
-              id="baseurl"
-              name="baseurl"
-              type="text"
-              onChange={handleUrlChange}
-              value={baseurl}
-            ></input>
-            <br />
-            <label htmlFor="filename">Filename:</label>
-            <input
-              id="filename"
-              name="filename"
-              type="text"
-              onChange={handleFilenameChange}
-            ></input>
-            <button onClick={loadCode}>Load</button>
-          </div>
+      <Menubar 
+        diffEditor={diffEditor} 
+        setDiffEditor={setDiffEditor}
+        allLanguages={allLanguages}
+        language={language}
+        setLanguage={setLanguage}
+        />
+      <Container fluid>
+        <Row>
+          <Col>
+            <div>
+              <label htmlFor="baseurl">SharePoint Folder:</label>
+              <input
+                id="baseurl"
+                name="baseurl"
+                type="text"
+                onChange={handleUrlChange}
+                value={baseurl}
+              ></input>
+              <br />
+              <Form>
+                <Form.Group>
+                  <Form.Label>Load File</Form.Label>
+                  <Form.Control 
+                    onChange={handleCodeFileChange}
+                    type="file" 
+                    size="sm"
+                    accept=".txt"/>
+                </Form.Group>
+              </Form>
+            </div>
 
-          <div className="control-panel">
-            <h3>Control Panel</h3>
-            <button>Save</button>
-          </div>
-        </div>
-        <div>
-          <Editor
-            height="90vh"
-            defaultValue="/** CODE
-            */"
-            defaultLanguage="javascript"
-            theme="vs-dark"
-            value={code}
-          />
-        </div>
-      </div>
+            {diffEditor && 
+            <Form>
+              <Form.Group>
+                <Form.Label>Diff Original File</Form.Label>
+                <Form.Control 
+                  onChange={handleFileChange}
+                  type="file" 
+                  size="sm"
+                  accept=".txt"/>
+              </Form.Group>
+            </Form>}
+          </Col>
+          <Col xs={10}>
+            {diffEditor 
+            ? 
+            <DiffEditor
+              height="90vh"
+              modified={code}
+              original={originalCode}
+              language={language}
+              theme="vs-dark"
+
+            />
+            : 
+            <Editor
+              height="90vh"
+              defaultValue="/** CODE
+              */"
+              language={language}
+              theme="vs-dark"
+              onValidate={handleEditorValidation}
+              value={code}
+              onChange={handleCodeChange}
+              onMount={handleEditorDidMount}
+              // Why {bracketPairColorization: {enabled: true}} doesn't work is weird.
+              options={{"bracketPairColorization.enabled": true}}
+            />
+            }
+          </Col>
+        </Row>
+      </Container>
     </div>
   );
 }
