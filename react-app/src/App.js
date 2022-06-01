@@ -5,6 +5,7 @@ import * as monaco from "monaco-editor";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Menubar from "./components/Menubar";
 import { Container, Row, Col, Form } from "react-bootstrap";
+import ConsoleFeed from "./components/ConsoleFeed";
 
 loader.config({ monaco });
 
@@ -164,7 +165,7 @@ function App() {
               </Form.Group>
             </Form>}
           </Col>
-          <Col xs={10}>
+          <Col xs={6}>
             {diffEditor 
             ? 
             <DiffEditor
@@ -190,6 +191,9 @@ function App() {
               options={{"bracketPairColorization.enabled": true}}
             />
             }
+          </Col>
+          <Col>
+            <ConsoleFeed/>
           </Col>
         </Row>
       </Container>
