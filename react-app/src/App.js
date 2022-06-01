@@ -186,6 +186,8 @@ function App() {
               value={code}
               onChange={handleCodeChange}
               onMount={handleEditorDidMount}
+              // Why {bracketPairColorization: {enabled: true}} doesn't work is weird.
+              options={{"bracketPairColorization.enabled": true}}
             />
             }
           </Col>
