@@ -7,6 +7,28 @@ import Menubar from "./components/Menubar";
 import { Container, Row, Col, Form } from "react-bootstrap";
 import ConsoleFeed from "./components/ConsoleFeed";
 
+window.MonacoEnvironment = {
+  getWorker(moduleId, label){
+    switch (label) {
+      case 'css':
+      case 'less':
+      case 'scss':
+        return new Worker('./css.worker.txt');
+      case 'handlebars':
+      case 'html':
+      case 'razor':
+        return new Worker('./html.worker.txt');
+      case 'json':
+        return new Worker('./json.worker.txt');
+      case 'javascript':
+      case 'typescript':
+        return new Worker('./ts.worker.txt');
+      default:
+        return new Worker('./editor.worker.txt');
+    }
+  }
+}
+
 loader.config({ monaco });
 
 const txtUrl =
@@ -80,6 +102,11 @@ function App() {
       getCode(baseurl, filename, setCode);
     }
   };
+  
+  function handleEditorWillMount(mnc) {
+    // alert(JSON.stringify(window.MonacoEnvironment));
+    // alert(new URL("rsaf/rdo.js",import.meta.url));
+  }
 
   /**
    * To get the reference to the editor DOM object and add in key bindings
@@ -90,7 +117,8 @@ function App() {
     editorRef.current = editor;
     editor.addCommand(monaco.KeyMod.Alt | monaco.KeyMod.Shift | monaco.KeyCode.KeyF, () => {
       editor.trigger('editor','editor.action.formatDocument');
-    })
+    });
+    
   };
 
   /**
@@ -187,6 +215,7 @@ function App() {
               value={code}
               onChange={handleCodeChange}
               onMount={handleEditorDidMount}
+              beforeMount={handleEditorWillMount}
               // Why {bracketPairColorization: {enabled: true}} doesn't work is weird.
               options={{"bracketPairColorization.enabled": true}}
             />
