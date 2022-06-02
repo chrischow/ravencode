@@ -11,7 +11,7 @@ module.exports = {
                 })],
                 [new MonacoEditorWebpackPlugin({
                     filename: "[name].worker.txt",
-                    publicPath: ""
+                    publicPath: "/rsaf/RDO/devtools/main/"
                 }), "append"]
             ]
         },
