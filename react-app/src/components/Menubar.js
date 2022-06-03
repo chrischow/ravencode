@@ -1,5 +1,37 @@
 import React from 'react';
+
+import PropTypes from 'prop-types';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import CssBaseline from '@mui/material/CssBaseline';
+import useScrollTrigger from '@mui/material/useScrollTrigger';
+// import Box from '@mui/material/Box';
+// import Container from '@mui/material/Container';
 import { ToggleButton, Container, Nav, Navbar, Button, NavDropdown } from "react-bootstrap";
+
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
+import LanguageMenu from './LanguageMenu';
+
+function ElevationScroll(props) {
+    const { children } = props;
+
+    const trigger = useScrollTrigger({
+        disableHysteresis: true,
+        threshold: 0
+    });
+
+    return React.cloneElement(children, {
+        elevation: trigger ? 4 : 0,
+    });
+}
+
+ElevationScroll.propTypes = {
+    children: PropTypes.element.isRequired
+};
+  
 
 /**
  * 
@@ -16,22 +48,7 @@ export default function Menubar(props) {
         const {name, value, type, checked} = e.target;
         props.setDiffEditor(pData => checked);
     };
-
-    function handleLangSelect(eventKey, event) {
-        props.setLanguage(pLang => eventKey);
-    }
-
-    const navDropItems = props.allLanguages.map((x, idx) => {
-        return (
-            <NavDropdown.Item 
-                active={x === props.language}
-                key={x}
-                eventKey={x}>
-                {x}
-            </NavDropdown.Item>
-        )
-    })
-    
+  
     return (
         <Navbar bg="dark" variant="dark">
             <Container fluid>
@@ -48,24 +65,21 @@ export default function Menubar(props) {
                         className="me-auto my-2 my-lg-0"
                         navbarScroll
                     >
-                        <NavDropdown 
-                            title={props.language} 
-                            id="nav-dropdown"
-                            onSelect={handleLangSelect}
-                            >
-                            {navDropItems}
-                        </NavDropdown>
+                        <LanguageMenu {...props}/>
                     </Nav>
                     <Nav>
-                        <ToggleButton
-                            id="toggle-check"
-                            type="checkbox"
-                            onChange={handleOnChange}
-                            checked={props.diffEditor}
-                            value="1"
-                            variant="outline-primary">
-                            Diff Editor {props.diffEditor ? "ON" : "OFF"}
-                        </ToggleButton>
+                        <FormGroup>
+                            <FormControlLabel
+                                control={
+                                    <Switch 
+                                    checked={props.diffEditor}
+                                    onChange={handleOnChange}
+                                    inputProps={{ 'aria-label': 'controlled'}}
+                                    />
+                                }
+                                label="Diff Editor"
+                                />
+                        </FormGroup>
                     </Nav>
                 </Navbar.Collapse>
             </Container>

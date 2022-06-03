@@ -5,14 +5,12 @@ import * as monaco from "monaco-editor";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Menubar from "./components/Menubar";
 import { Container, Row, Col, Form } from "react-bootstrap";
-import ConsoleFeed from "./components/ConsoleFeed";
 
 function loadBlob(filename) {
   var xhr = new XMLHttpRequest();
   var url = new URL(`${filename}.txt`,window.location.href)
   xhr.open("GET", url, false);
   xhr.send();
-  console.log(url);
   return xhr.responseText;
 }
 
@@ -258,11 +256,6 @@ function App() {
             />
             }
           </Col>
-          { debugConsoleFeed &&
-          <Col>
-            <ConsoleFeed/>
-          </Col>
-          }
         </Row>
       </Container>
     </div>
