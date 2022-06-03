@@ -9,7 +9,7 @@ import ConsoleFeed from "./components/ConsoleFeed";
 
 function loadBlob(filename) {
   var xhr = new XMLHttpRequest();
-  var url = URL(`${filename}.txt`,import.meta.url)
+  var url = new URL(`${filename}.txt`,"http://localhost:3000")
   xhr.open("GET", url, false);
   xhr.send();
   console.log(url);
