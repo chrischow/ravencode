@@ -7,32 +7,68 @@ import Menubar from "./components/Menubar";
 import { Container, Row, Col, Form } from "react-bootstrap";
 import ConsoleFeed from "./components/ConsoleFeed";
 
+function loadBlob(filename) {
+  var xhr = new XMLHttpRequest();
+  var url = URL(`${filename}.txt`,import.meta.url)
+  xhr.open("GET", url, false);
+  xhr.send();
+  console.log(url);
+  return xhr.responseText;
+}
+
+const txtUrl =
+  "https://raw.githubusercontent.com/chrischow/project-ace/main/rokr/components/";
+
 window.MonacoEnvironment = {
   getWorker(moduleId, label){
     switch (label) {
       case 'css':
       case 'less':
       case 'scss':
-        return new Worker('./css.worker.txt');
+        return new Worker(URL.createObjectURL(new Blob(
+          [loadBlob('css.worker')],
+          {
+            type: "text/javascript"
+          }
+          )));
       case 'handlebars':
       case 'html':
       case 'razor':
-        return new Worker('./html.worker.txt');
+        return new Worker(URL.createObjectURL(new Blob(
+          [loadBlob('html.worker')],
+          {
+            type: "text/javascript"
+          }
+          )));
       case 'json':
-        return new Worker('./json.worker.txt');
+        return new Worker(URL.createObjectURL(new Blob(
+          [loadBlob('json.worker')],
+          {
+            type: "text/javascript"
+          }
+          )));
       case 'javascript':
       case 'typescript':
-        return new Worker('./ts.worker.txt');
+        {
+          return new Worker(URL.createObjectURL(new Blob(
+            [loadBlob('ts.worker')],
+          {
+            type: "text/javascript"
+          }
+          )));
+        }
       default:
-        return new Worker('./editor.worker.txt');
+        return new Worker(URL.createObjectURL(new Blob(
+          [loadBlob('editor.worker')],
+          {
+            type: "text/javascript"
+          }
+          )));
     }
   }
 }
 
 loader.config({ monaco });
-
-const txtUrl =
-  "https://raw.githubusercontent.com/chrischow/project-ace/main/rokr/components/";
 
 const getCode = (url, filename, callback) => {
   // Retrieve text
@@ -79,7 +115,8 @@ function App() {
   const [originalCode, setOriginalCode] = useState("");
 
   const editorRef = useRef(null);
-
+  const debugConsoleFeed = false;
+  
   const handleUrlChange = (event) => {
     setBaseurl(event.target.value);
     console.log(event.target.value);
@@ -193,7 +230,7 @@ function App() {
               </Form.Group>
             </Form>}
           </Col>
-          <Col xs={6}>
+          <Col xs={debugConsoleFeed ? 6 : 9}>
             {diffEditor 
             ? 
             <DiffEditor
@@ -221,9 +258,11 @@ function App() {
             />
             }
           </Col>
+          { debugConsoleFeed &&
           <Col>
             <ConsoleFeed/>
           </Col>
+          }
         </Row>
       </Container>
     </div>
