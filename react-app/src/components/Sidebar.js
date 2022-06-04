@@ -3,15 +3,13 @@ import Box from '@mui/material/Box';
 import { Drawer, ListSubheader, Toolbar, TextField } from '@mui/material';
 import { styled } from '@mui/material/styles'
 import List from '@mui/material/List';
-import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
-import { UploadFile, Http } from '@mui/icons-material';
+import { UploadFile, Link } from '@mui/icons-material';
+import Explorer from './Explorer';
 
 const drawerWidth = 240;
 
@@ -80,9 +78,25 @@ export default function Sidebar(props) {
                     id="outline-size-small" 
                     size="small"
                 />
+                <ListItemButton disablePadding disableGutters>
+                    <ListItemIcon sx={{ pl: 2 }}>
+                        <Link />
+                    </ListItemIcon>
+                </ListItemButton>
             </ListItem>
         </List>
         <Divider />
+        <List
+            component="nav"
+            aria-labelledby='nested-explorer-subheader'
+            subheader={
+                <ListSubheader component="div" id="nested-explorer-subheader">
+                    Sharepoint EXPLORER
+                </ListSubheader>
+            }
+        >
+            <Explorer />
+        </List>
       </Drawer>
   );
 }

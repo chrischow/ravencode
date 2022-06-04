@@ -5,7 +5,7 @@ import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import useScrollTrigger from '@mui/material/useScrollTrigger';
-import { ToggleButton, Box } from '@mui/material';
+import { ToggleButton, Box, IconButton } from '@mui/material';
 import { VerticalSplit } from '@mui/icons-material'
 import LanguageMenu from './LanguageMenu';
 
@@ -45,8 +45,11 @@ export default function Menubar(props) {
         <ElevationScroll {...props}>
             <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
                 <Toolbar variant="dense">
+                    <IconButton>
+                        <img src="./raven32.png"/>
+                    </IconButton>
                     <Typography variant="h7" nowrap="true" component="div" sx={{ mr: 2 }}>
-                        RavenITE [RDO's integrated text editor]
+                        Ravencode [RDO's integrated text editor]
                     </Typography>
                     <LanguageMenu {...props}/>
                     <Box sx={{ flexGrow: 1}}/>
