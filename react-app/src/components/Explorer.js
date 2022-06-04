@@ -24,9 +24,9 @@ const StyledTreeItemRoot = styled(TreeItem)(({ theme }) => ({
     paddingRight: theme.spacing(1),
   },
   [`& .${treeItemClasses.group}`]: {
-    marginLeft: 15,
-    paddingLeft: 18,
-    borderLeft: `1px solid`
+    marginLeft: 16,
+    paddingLeft: 5,
+    borderLeft: `1px dashed`
   },
 }));
 
@@ -43,7 +43,7 @@ function StyledTreeItem(props) {
   return (
     <StyledTreeItemRoot
       label={
-        <Box sx={{ display: 'flex', alignItems: 'center', p: 0.5, pr: 0 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', p: 0.2, pr: 0 }}>
           <Box component={LabelIcon} color="inherit" sx={{ mr: 1 }} />
           <Typography variant="body2" sx={{ fontWeight: 'inherit', flexGrow: 1 }}>
             {labelText}
@@ -73,7 +73,7 @@ StyledTreeItem.propTypes = {
 export default function Explorer(props) {
   return (
     <TreeView
-      aria-label="gmail"
+      aria-label="explorer"
       defaultExpanded={['3']}
       defaultCollapseIcon={<ExpandMoreIcon />}
       defaultExpandIcon={<ChevronRightIcon />}
