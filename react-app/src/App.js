@@ -1,10 +1,12 @@
 import "./App.css";
+import React from 'react';
 import { useState, useEffect, useRef } from "react";
 import Editor, { useMonaco, loader, DiffEditor } from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
-import 'bootstrap/dist/css/bootstrap.min.css';
 import Menubar from "./components/Menubar";
-import { Container, Row, Col, Form } from "react-bootstrap";
+import Sidebar from "./components/Sidebar";
+import { Box, Toolbar, CssBaseline, Container } from "@mui/material";
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 
 function loadBlob(filename) {
   var xhr = new XMLHttpRequest();
@@ -103,6 +105,18 @@ const allLanguages = [
   "markdown"
 ]
 
+const darkTheme = createTheme({
+  palette: {
+    type: 'dark',
+    primary: {
+      main: '#3f51b5',
+    },
+    secondary: {
+      main: '#f50057'
+    }
+  }
+});
+
 function App() {
   // State
   const [baseurl, setBaseurl] = useState(txtUrl);
@@ -111,6 +125,7 @@ function App() {
   const [diffEditor, setDiffEditor] = useState(false);
   const [language, setLanguage] = useState("javascript");
   const [originalCode, setOriginalCode] = useState("");
+  const [isDarkMode, setDarkMode] = useState(true);
 
   const editorRef = useRef(null);
   const debugConsoleFeed = false;
@@ -128,6 +143,7 @@ function App() {
     const reader = new FileReader();
     reader.onload = function(e) {
       setCode(pCode => e.target.result);
+      setOriginalCode(pCode => e.target.result);
     }
     reader.readAsText(file);
   };
@@ -183,82 +199,54 @@ function App() {
   };
 
   return (
-    <div>
-      <Menubar 
-        diffEditor={diffEditor} 
-        setDiffEditor={setDiffEditor}
-        allLanguages={allLanguages}
-        language={language}
-        setLanguage={setLanguage}
+    <ThemeProvider theme={darkTheme}>
+      <Box sx={{ display: 'flex' }}>
+        <React.Fragment>
+        <CssBaseline />
+        <Menubar 
+          diffEditor={diffEditor} 
+          setDiffEditor={setDiffEditor}
+          allLanguages={allLanguages}
+          language={language}
+          setLanguage={setLanguage}
         />
-      <Container fluid>
-        <Row>
-          <Col>
-            <div>
-              <label htmlFor="baseurl">SharePoint Folder:</label>
-              <input
-                id="baseurl"
-                name="baseurl"
-                type="text"
-                onChange={handleUrlChange}
-                value={baseurl}
-              ></input>
-              <br />
-              <Form>
-                <Form.Group>
-                  <Form.Label>Load File</Form.Label>
-                  <Form.Control 
-                    onChange={handleCodeFileChange}
-                    type="file" 
-                    size="sm"
-                    accept=".txt"/>
-                </Form.Group>
-              </Form>
-            </div>
-
-            {diffEditor && 
-            <Form>
-              <Form.Group>
-                <Form.Label>Diff Original File</Form.Label>
-                <Form.Control 
-                  onChange={handleFileChange}
-                  type="file" 
-                  size="sm"
-                  accept=".txt"/>
-              </Form.Group>
-            </Form>}
-          </Col>
-          <Col xs={debugConsoleFeed ? 6 : 9}>
-            {diffEditor 
-            ? 
-            <DiffEditor
-              height="90vh"
-              modified={code}
-              original={originalCode}
-              language={language}
-              theme="vs-dark"
-
-            />
-            : 
-            <Editor
-              height="90vh"
-              defaultValue="/** CODE
-              */"
-              language={language}
-              theme="vs-dark"
-              onValidate={handleEditorValidation}
-              value={code}
-              onChange={handleCodeChange}
-              onMount={handleEditorDidMount}
-              beforeMount={handleEditorWillMount}
-              // Why {bracketPairColorization: {enabled: true}} doesn't work is weird.
-              options={{"bracketPairColorization.enabled": true}}
-            />
-            }
-          </Col>
-        </Row>
-      </Container>
-    </div>
+        <Sidebar handleCodeFileChange={handleCodeFileChange}/>
+        <Container maxWidth={false}>
+          <Box 
+            component="main"
+            sx={{ flexGrow: 1, pt: 6
+          }}
+          >
+                {diffEditor 
+                ? 
+                <DiffEditor
+                  height="90vh"
+                  modified={code}
+                  original={originalCode}
+                  language={language}
+                  theme="vs-dark"
+                />
+                : 
+                <Editor
+                  height="90vh"
+                  defaultValue="/** CODE
+                  */"
+                  language={language}
+                  theme="vs-dark"
+                  onValidate={handleEditorValidation}
+                  value={code}
+                  onChange={handleCodeChange}
+                  onMount={handleEditorDidMount}
+                  beforeMount={handleEditorWillMount}
+                  // Why {bracketPairColorization: {enabled: true}} doesn't work is weird.
+                  options={{"bracketPairColorization.enabled": true}}
+                />
+                }
+          </Box>
+        </Container>
+        </React.Fragment>
+      </Box>
+    </ThemeProvider>
   );
 }
 

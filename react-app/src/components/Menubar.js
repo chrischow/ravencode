@@ -4,15 +4,9 @@ import PropTypes from 'prop-types';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import CssBaseline from '@mui/material/CssBaseline';
 import useScrollTrigger from '@mui/material/useScrollTrigger';
-// import Box from '@mui/material/Box';
-// import Container from '@mui/material/Container';
-import { ToggleButton, Container, Nav, Navbar, Button, NavDropdown } from "react-bootstrap";
-
-import FormGroup from '@mui/material/FormGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
+import { ToggleButton, Box } from '@mui/material';
+import { VerticalSplit } from '@mui/icons-material'
 import LanguageMenu from './LanguageMenu';
 
 function ElevationScroll(props) {
@@ -31,7 +25,6 @@ function ElevationScroll(props) {
 ElevationScroll.propTypes = {
     children: PropTypes.element.isRequired
 };
-  
 
 /**
  * 
@@ -45,44 +38,28 @@ ElevationScroll.propTypes = {
 export default function Menubar(props) {
 
     function handleOnChange(e) {
-        const {name, value, type, checked} = e.target;
-        props.setDiffEditor(pData => checked);
+        props.setDiffEditor(pData => !pData);
     };
   
     return (
-        <Navbar bg="dark" variant="dark">
-            <Container fluid>
-                <Navbar.Brand href="#home">
-                    <img 
-                        src="./raven32.png"
-                        height="30"
-                        className='d-inline-block align-top'
-                        />{' '}
-                    RavenITE [RDO's integrated text editor]
-                </Navbar.Brand>
-                <Navbar.Collapse id="navbar">
-                    <Nav
-                        className="me-auto my-2 my-lg-0"
-                        navbarScroll
+        <ElevationScroll {...props}>
+            <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+                <Toolbar variant="dense">
+                    <Typography variant="h7" nowrap="true" component="div" sx={{ mr: 2 }}>
+                        RavenITE [RDO's integrated text editor]
+                    </Typography>
+                    <LanguageMenu {...props}/>
+                    <Box sx={{ flexGrow: 1}}/>
+                    <ToggleButton
+                        value="check"
+                        selected={props.diffEditor}
+                        onChange={handleOnChange}
+                        size="small"
                     >
-                        <LanguageMenu {...props}/>
-                    </Nav>
-                    <Nav>
-                        <FormGroup>
-                            <FormControlLabel
-                                control={
-                                    <Switch 
-                                    checked={props.diffEditor}
-                                    onChange={handleOnChange}
-                                    inputProps={{ 'aria-label': 'controlled'}}
-                                    />
-                                }
-                                label="Diff Editor"
-                                />
-                        </FormGroup>
-                    </Nav>
-                </Navbar.Collapse>
-            </Container>
-        </Navbar>
+                        <VerticalSplit />
+                    </ToggleButton> 
+                </Toolbar>
+            </AppBar>
+        </ElevationScroll>
     )
 }

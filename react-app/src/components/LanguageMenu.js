@@ -2,6 +2,7 @@ import * as React from 'react';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import CodeIcon from '@mui/icons-material/Code';
 
 /**
  * 
@@ -32,13 +33,18 @@ export default function LanguageMenu(props) {
     )
   });
   return (
-    <div>
+    <>
       <Button
         id="basic-button"
         aria-controls={open ? 'basic-menu' : undefined}
         aria-haspopup="true"
         aria-expanded={open ? 'true' : undefined}
         onClick={handleClick}
+        startIcon={<CodeIcon />}
+        variant="outlined"
+        size="small"
+        color="inherit"
+        sx={props.sx}
       >
         {props.language}
       </Button>
@@ -53,6 +59,6 @@ export default function LanguageMenu(props) {
       >
         {menuItems}
       </Menu>
-    </div>
+    </>
   );
 }
