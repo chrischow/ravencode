@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
-import { Drawer, ListSubheader, Toolbar } from '@mui/material';
+import { Drawer, ListSubheader, Toolbar, TextField } from '@mui/material';
 import { styled } from '@mui/material/styles'
 import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
@@ -74,15 +74,15 @@ export default function Sidebar(props) {
                 </ListSubheader>
             }
         >
-            <ListItem disablePadding>
-                <ListItemButton>
-                    <ListItemIcon>
-                        <Http />
-                    </ListItemIcon>
-                    <ListItemText primary="Set URL"/>
-                </ListItemButton>
+            <ListItem dense={true}>
+                <TextField 
+                    label="Set URL" 
+                    id="outline-size-small" 
+                    size="small"
+                />
             </ListItem>
         </List>
+        <Divider />
       </Drawer>
   );
 }

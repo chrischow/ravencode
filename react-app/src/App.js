@@ -211,7 +211,7 @@ function App() {
           setLanguage={setLanguage}
         />
         <Sidebar handleCodeFileChange={handleCodeFileChange}/>
-        <Container maxWidth={false}>
+        <Container maxWidth={false} disableGutters>
           <Box 
             component="main"
             sx={{ flexGrow: 1, pt: 6
