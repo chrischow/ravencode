@@ -107,14 +107,19 @@ const allLanguages = [
 
 const darkTheme = createTheme({
   palette: {
-    type: 'dark',
     primary: {
-      main: '#3f51b5',
+      light: '#4f5b62',
+      main: '#263238',
+      dark: '#000a12',
+      contrastText: '#ffffff',
     },
     secondary: {
-      main: '#f50057'
-    }
-  }
+      light: '#58a5f0',
+      main: '#0277bd',
+      dark: '#004c8c',
+      contrastText: '#ffffff',
+    },
+  },
 });
 
 function App() {

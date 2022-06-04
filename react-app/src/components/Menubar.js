@@ -43,13 +43,30 @@ export default function Menubar(props) {
   
     return (
         <ElevationScroll {...props}>
-            <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+            <AppBar 
+                position="fixed"
+                sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+            >
                 <Toolbar variant="dense">
-                    <IconButton>
+                    <IconButton sx={{ pl: 0 }}>
                         <img src="./raven32.png"/>
                     </IconButton>
-                    <Typography variant="h7" nowrap="true" component="div" sx={{ mr: 2 }}>
-                        Ravencode [RDO's integrated text editor]
+                    <Typography 
+                        variant="subtitle1" 
+                        nowrap="true" 
+                        component="div" 
+                        sx={{ mr: 1 }}
+                    >
+                        Ravencode
+                    </Typography>
+                    <Typography 
+                        variant="subtitle2" 
+                        nowrap="true" 
+                        component="div" 
+                        sx={{ mr: 4}}
+                        color="secondary"
+                    >
+                        .::RDO's integrated text editor::.
                     </Typography>
                     <LanguageMenu {...props}/>
                     <Box sx={{ flexGrow: 1}}/>
@@ -58,6 +75,7 @@ export default function Menubar(props) {
                         selected={props.diffEditor}
                         onChange={handleOnChange}
                         size="small"
+                        color="info"
                     >
                         <VerticalSplit />
                     </ToggleButton> 

@@ -14,6 +14,58 @@ import ForumIcon from '@mui/icons-material/Forum';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import FolderIcon from '@mui/icons-material/Folder';
+import TextSnippetIcon from '@mui/icons-material/TextSnippet';
+import HtmlIcon from '@mui/icons-material/Html';
+import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
+
+
+const fakeData = [{
+  id: '1',
+  name: 'root',
+  type: 'folder',
+  path: '',
+  ext: '',
+  children: [
+    {
+      id: '2',
+      name: 'empty folder',
+      type: 'folder',
+      path: '',
+      ext: '',
+    },
+    {
+      id: '3',
+      name: 'src folder',
+      type: 'folder',
+      path: '',
+      ext: '',
+      children: [
+        {
+          id: '4',
+          name: 'rokr.txt',
+          type: 'file',
+          path: '',
+          ext: 'txt',
+        },
+        {
+          id: '6',
+          name: 'babel.txt',
+          type: 'file',
+          path: '',
+          ext: 'txt',
+        }
+      ]
+    },
+    {
+      id: '5',
+      name: 'index.html',
+      type: 'file',
+      path: '',
+      ext: 'html',
+    }
+  ]
+}]
 
 const StyledTreeItemRoot = styled(TreeItem)(({ theme }) => ({
   color: theme.palette.text.secondary,
@@ -71,52 +123,35 @@ StyledTreeItem.propTypes = {
 };
 
 export default function Explorer(props) {
+  
+  const renderTree = (node) => (
+    <StyledTreeItem 
+      nodeId={node.id}
+      labelText={node.name}
+      labelIcon={(
+        node.type === "folder" ? FolderIcon : (
+          node.ext === "txt" ? TextSnippetIcon : (
+            node.ext === "html" ? HtmlIcon : InsertDriveFileIcon
+          )
+        )
+      )}
+    >
+      {Array.isArray(node.children)
+        ? node.children.map((node) => renderTree(node))
+        : null}
+    </StyledTreeItem>
+  );
+  
   return (
     <TreeView
       aria-label="explorer"
-      defaultExpanded={['3']}
+      defaultExpanded={[]}
       defaultCollapseIcon={<ExpandMoreIcon />}
       defaultExpandIcon={<ChevronRightIcon />}
       defaultEndIcon={<div style={{ width: 24 }} />}
       sx={{ height: 264, flexGrow: 1, maxWidth: 400, overflowY: 'auto' }}
     >
-      <StyledTreeItem nodeId="1" labelText="All Mail" labelIcon={MailIcon} />
-      <StyledTreeItem nodeId="2" labelText="Trash" labelIcon={DeleteIcon} />
-      <StyledTreeItem nodeId="3" labelText="Categories" labelIcon={Label}>
-        <StyledTreeItem
-          nodeId="5"
-          labelText="Social"
-          labelIcon={SupervisorAccountIcon}
-          labelInfo="90"
-          color="#1a73e8"
-          bgColor="#e8f0fe"
-        />
-        <StyledTreeItem
-          nodeId="6"
-          labelText="Updates"
-          labelIcon={InfoIcon}
-          labelInfo="2,294"
-          color="#e3742f"
-          bgColor="#fcefe3"
-        />
-        <StyledTreeItem
-          nodeId="7"
-          labelText="Forums"
-          labelIcon={ForumIcon}
-          labelInfo="3,566"
-          color="#a250f5"
-          bgColor="#f3e8fd"
-        />
-        <StyledTreeItem
-          nodeId="8"
-          labelText="Promotions"
-          labelIcon={LocalOfferIcon}
-          labelInfo="733"
-          color="#3c8039"
-          bgColor="#e6f4ea"
-        />
-      </StyledTreeItem>
-      <StyledTreeItem nodeId="4" labelText="History" labelIcon={Label} />
+      {fakeData.map((node) => renderTree(node))}
     </TreeView>
   );
 }

@@ -41,9 +41,9 @@ export default function LanguageMenu(props) {
         aria-expanded={open ? 'true' : undefined}
         onClick={handleClick}
         startIcon={<CodeIcon />}
-        variant="outlined"
+        variant="contained"
         size="small"
-        color="inherit"
+        color="secondary"
         sx={props.sx}
       >
         {props.language}
