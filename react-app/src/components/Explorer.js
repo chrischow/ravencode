@@ -5,52 +5,46 @@ import Box from '@mui/material/Box';
 import TreeView from '@mui/lab/TreeView';
 import TreeItem, { treeItemClasses } from '@mui/lab/TreeItem';
 import Typography from '@mui/material/Typography';
-import MailIcon from '@mui/icons-material/Mail';
-import DeleteIcon from '@mui/icons-material/Delete';
-import Label from '@mui/icons-material/Label';
-import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
-import InfoIcon from '@mui/icons-material/Info';
-import ForumIcon from '@mui/icons-material/Forum';
-import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import FolderIcon from '@mui/icons-material/Folder';
 import TextSnippetIcon from '@mui/icons-material/TextSnippet';
 import HtmlIcon from '@mui/icons-material/Html';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
+import { RavencodeFolderData } from '../util/SharepointUtil';
 
 
 const fakeData = [{
   id: '1',
-  name: 'root',
+  dataName: 'root',
   type: 'folder',
   path: '',
   ext: '',
   children: [
     {
       id: '2',
-      name: 'empty folder',
+      dataName: 'empty folder',
       type: 'folder',
       path: '',
       ext: '',
     },
     {
       id: '3',
-      name: 'src folder',
+      dataName: 'src folder',
       type: 'folder',
       path: '',
       ext: '',
       children: [
         {
           id: '4',
-          name: 'rokr.txt',
+          dataName: 'rokr.txt',
           type: 'file',
           path: '',
           ext: 'txt',
         },
         {
           id: '6',
-          name: 'babel.txt',
+          dataName: 'babel.txt',
           type: 'file',
           path: '',
           ext: 'txt',
@@ -59,7 +53,7 @@ const fakeData = [{
     },
     {
       id: '5',
-      name: 'index.html',
+      dataName: 'index.html',
       type: 'file',
       path: '',
       ext: 'html',
@@ -122,12 +116,17 @@ StyledTreeItem.propTypes = {
   labelText: PropTypes.string.isRequired,
 };
 
+/**
+ * 
+ * @param {[RavencodeFolderData]} props.treeData This is the data to render.
+ * @returns 
+ */
 export default function Explorer(props) {
   
   const renderTree = (node) => (
     <StyledTreeItem 
       nodeId={node.id}
-      labelText={node.name}
+      labelText={node.dataName}
       labelIcon={(
         node.type === "folder" ? FolderIcon : (
           node.ext === "txt" ? TextSnippetIcon : (
@@ -136,7 +135,7 @@ export default function Explorer(props) {
         )
       )}
     >
-      {Array.isArray(node.children)
+      {node.children.length > 0
         ? node.children.map((node) => renderTree(node))
         : null}
     </StyledTreeItem>
@@ -151,7 +150,7 @@ export default function Explorer(props) {
       defaultEndIcon={<div style={{ width: 24 }} />}
       sx={{ height: 264, flexGrow: 1, maxWidth: 400, overflowY: 'auto' }}
     >
-      {fakeData.map((node) => renderTree(node))}
+      {props.treeData.map((node) => renderTree(node))}
     </TreeView>
   );
 }

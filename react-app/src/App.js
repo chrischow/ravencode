@@ -7,6 +7,7 @@ import Menubar from "./components/Menubar";
 import Sidebar from "./components/Sidebar";
 import { Box, Toolbar, CssBaseline, Container } from "@mui/material";
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { SharepointUtil, RavencodeFolderData } from './util/SharepointUtil';
 
 function loadBlob(filename) {
   var xhr = new XMLHttpRequest();
@@ -74,7 +75,7 @@ const getCode = (url, filename, callback) => {
   // Retrieve text
   var xhr = new XMLHttpRequest();
   xhr.onreadystatechange = function () {
-    if (this.readyState == 4 && this.status == 200) {
+    if (this.readyState === 4 && this.status === 200) {
       callback(this.responseText);
     }
   };
@@ -131,6 +132,7 @@ function App() {
   const [language, setLanguage] = useState("javascript");
   const [originalCode, setOriginalCode] = useState("");
   const [isDarkMode, setDarkMode] = useState(true);
+  const [treeData, setTreeData] = useState(SharepointUtil.folderData());
 
   const editorRef = useRef(null);
   const debugConsoleFeed = false;
@@ -174,7 +176,7 @@ function App() {
     editor.addCommand(monaco.KeyMod.Alt | monaco.KeyMod.Shift | monaco.KeyCode.KeyF, () => {
       editor.trigger('editor','editor.action.formatDocument');
     });
-    
+    // TODO: Add in Ctrl+S Save binding to save either local or Sharepoint.
   };
 
   /**
@@ -215,7 +217,7 @@ function App() {
           language={language}
           setLanguage={setLanguage}
         />
-        <Sidebar handleCodeFileChange={handleCodeFileChange}/>
+        <Sidebar handleCodeFileChange={handleCodeFileChange} treeData={treeData}/>
         <Container maxWidth={false} disableGutters>
           <Box 
             component="main"

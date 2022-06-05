@@ -10,6 +10,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import { UploadFile, Link } from '@mui/icons-material';
 import Explorer from './Explorer';
+import { RavencodeFolderData } from '../util/SharepointUtil';
 
 const drawerWidth = 240;
 
@@ -20,6 +21,7 @@ const Input = styled('input')({
 /**
  * 
  * @param {function} props.handleCodeFileChange Handle the change in code for the editor.
+ * @param {[RavencodeFolderData]} props.treeData This is the data for the tree to render.
  * @returns 
  */
 export default function Sidebar(props) {
@@ -95,7 +97,7 @@ export default function Sidebar(props) {
                 </ListSubheader>
             }
         >
-            <Explorer />
+            <Explorer treeData={props.treeData}/>
         </List>
       </Drawer>
   );
