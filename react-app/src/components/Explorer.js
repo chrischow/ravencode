@@ -13,54 +13,6 @@ import HtmlIcon from '@mui/icons-material/Html';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import { RavencodeFolderData } from '../util/SharepointUtil';
 
-
-const fakeData = [{
-  id: '1',
-  dataName: 'root',
-  type: 'folder',
-  path: '',
-  ext: '',
-  children: [
-    {
-      id: '2',
-      dataName: 'empty folder',
-      type: 'folder',
-      path: '',
-      ext: '',
-    },
-    {
-      id: '3',
-      dataName: 'src folder',
-      type: 'folder',
-      path: '',
-      ext: '',
-      children: [
-        {
-          id: '4',
-          dataName: 'rokr.txt',
-          type: 'file',
-          path: '',
-          ext: 'txt',
-        },
-        {
-          id: '6',
-          dataName: 'babel.txt',
-          type: 'file',
-          path: '',
-          ext: 'txt',
-        }
-      ]
-    },
-    {
-      id: '5',
-      dataName: 'index.html',
-      type: 'file',
-      path: '',
-      ext: 'html',
-    }
-  ]
-}]
-
 const StyledTreeItemRoot = styled(TreeItem)(({ theme }) => ({
   color: theme.palette.text.secondary,
   [`& .${treeItemClasses.content}`]: {
@@ -117,12 +69,10 @@ StyledTreeItem.propTypes = {
 };
 
 /**
- * 
  * @param {[RavencodeFolderData]} props.treeData This is the data to render.
  * @returns 
  */
 export default function Explorer(props) {
-  
   const renderTree = (node) => (
     <StyledTreeItem 
       nodeId={node.id}

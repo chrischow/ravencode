@@ -33,7 +33,7 @@ export class SharepointUtil{
         }
         const xhr = new XMLHttpRequest();
         Object.entries(options.headers).map((x) => xhr.setRequestHeader(x[0], x[1]));
-        xhr.open("POST", url, false);
+        xhr.open(options.method, url, false);
         return xhr.send().d.FormDigestValue;
     }
 
