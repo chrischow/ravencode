@@ -73,6 +73,7 @@ StyledTreeItem.propTypes = {
  * @returns 
  */
 export default function Explorer(props) {
+
   const renderTree = (node) => (
     <StyledTreeItem 
       key={node.id}
@@ -85,6 +86,10 @@ export default function Explorer(props) {
           )
         )
       )}
+      value={"test"}
+      onDoubleClick={node.type === "folder" 
+        ? null 
+        : () => console.log(node.path)} // Each node doesn't have a value. so the alternative is to customise the functions.
     >
       {node.children.length > 0
         ? node.children.map((node) => renderTree(node))
@@ -100,6 +105,7 @@ export default function Explorer(props) {
       defaultExpandIcon={<ChevronRightIcon />}
       defaultEndIcon={<div style={{ width: 24 }} />}
       sx={{ height: 264, flexGrow: 1, maxWidth: 400, overflowY: 'auto' }}
+      // onDoubleClick={handleDblClick}
     >
       {props.treeData.map((node) => renderTree(node))}
     </TreeView>

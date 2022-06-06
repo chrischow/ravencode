@@ -10,7 +10,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import { UploadFile, Link } from '@mui/icons-material';
 import Explorer from './Explorer';
-import { RavencodeFolderData } from '../util/SharepointUtil';
+import { RavencodeFolderData, SharepointUtil } from '../util/SharepointUtil';
 
 const drawerWidth = 240;
 
@@ -22,6 +22,9 @@ const Input = styled('input')({
  * 
  * @param {function} props.handleCodeFileChange Handle the change in code for the editor.
  * @param {[RavencodeFolderData]} props.treeData This is the data for the tree to render.
+ * @param {string} props.siteUrl Sharepoint site Url.
+ * @param {function} props.setSiteUrl
+ * @param {function} props.setTreeData
  * @returns 
  */
 export default function Sidebar(props) {
@@ -29,6 +32,15 @@ export default function Sidebar(props) {
     function handleCodeLoad(event) {
         event.preventDefault();
         console.log(event);
+    }
+
+    function handleSiteUrl(event) {
+        // Link up the data!
+        props.setTreeData(pData => SharepointUtil.folderData());
+    }
+
+    function handleSiteUrlChange(event) {
+        props.setSiteUrl(pData => event.target.value);
     }
 
   return (
@@ -79,8 +91,11 @@ export default function Sidebar(props) {
                     label="Set URL" 
                     id="outline-size-small" 
                     size="small"
-                />
-                <ListItemButton disableGutters>
+                    onChange={handleSiteUrlChange}
+                >
+                    {props.siteUrl}
+                </TextField>
+                <ListItemButton onClick={handleSiteUrl} disableGutters>
                     <ListItemIcon sx={{ pl: 2 }}>
                         <Link />
                     </ListItemIcon>

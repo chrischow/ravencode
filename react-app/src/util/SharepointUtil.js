@@ -45,17 +45,16 @@ export class SharepointUtil{
      * text returned. responseText
      * _api/web/GetFileByServerRelativeUrl('')/$value
      */
-    getSPFolders(callback) {
-        const reqDigest = $.ajax({
-            url: new URL("_api/web/folders", this.siteUrl),
-            method: 'GET',
-            async: true,
-            headers: {
-                'Accept': 'application/json;odata=verbose'
-            },
-            success: data => callback(data),
-            error: (err) => console.log(JSON.stringify(err))
-        })
+    async getRawFileData(relativeUrl) {
+        var request = await fetch(new URL(`_api/web/GetFileByServerRelativeUrl('${relativeUrl}')/$value`, 
+            this.siteUrl),
+            {
+                method: 'GET',
+                headers: {
+                    "X-FORMS_BASE_AUTH_ACCEPTED": "f"
+                }
+            });
+        return request.responseText;
     }
 
     getXRequestDigest() {
@@ -72,15 +71,48 @@ export class SharepointUtil{
         return reqDigest.responseJSON.d.GetContextWebInformation.FormDigestValue;
     }
 
+    // This is a recursive function that retrieves the whole folder and file structure if nothing is passed.
+    // The underlying assumption is that the root siteUrl has no files!!!
+    async getFileObjFrom(relativeUrl = null, type = "folders") {
+        // Folders first
+        const result = [];
+        const url = (relativeUrl === null 
+            ? new URL(`_api/web/${type}`, this.siteUrl)
+            : new URL(`_api/web/GetFolderByServerRelativeUrl('${relativeUrl}')/${type}`), this.siteUrl);
+        var request = await fetch(url,
+            {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json;odata=verbose'
+                }
+            });
+        const mainJson = await request.json();
+        const unresolved = mainJson.d.results.map(async (node) => {
+            const data = new RavencodeFolderData(
+                node.Name, 
+                node.Name, 
+                node.__metadata.type === "SP.Folder" ? "folder" : "file",
+                node.ServerRelativeUrl);
+            if (node.__metadata.type === "SP.Folder" && node.ItemCount > 0) {
+                const childFolderData = await this.getFileObjFrom(node.ServerRelativeUrl, "Folders");
+                const childFileData = await this.getFileObjFrom(node.ServerRelativeUrl, "Files");
+                data.addChild(childFolderData.concat(childFileData));
+            }
+            result.push(data);
+        });
+        await Promise.all(unresolved);
+        return result;
+    }
+
     static folderData(folderPath) {
-        const fakeData = new RavencodeFolderData("1", "root", "folder", "");
-        fakeData.addChild(new RavencodeFolderData("2", "empty folder", "folder", ""));
+        const fakeData = new RavencodeFolderData("1", "root", "folder", "/root");
+        fakeData.addChild(new RavencodeFolderData("2", "empty folder", "folder", "/root/empty folder"));
 
         const srcFolder = new RavencodeFolderData("3", "src folder", "folder", "");
-        srcFolder.addChild(new RavencodeFolderData("4", "rokr.txt", "file", ""));
-        srcFolder.addChild(new RavencodeFolderData("6", "babel.txt", "file", ""));
+        srcFolder.addChild(new RavencodeFolderData("4", "rokr.txt", "file", "/root/src/rokr.txt"));
+        srcFolder.addChild(new RavencodeFolderData("6", "babel.txt", "file", "/root/src/babel.txt"));
         fakeData.addChild(srcFolder);
-        fakeData.addChild(new RavencodeFolderData("5", "index.html", "file", ""));
+        fakeData.addChild(new RavencodeFolderData("5", "index.html", "file", "/root/index.html"));
 
         return [fakeData];
     }

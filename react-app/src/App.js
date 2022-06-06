@@ -17,8 +17,7 @@ function loadBlob(filename) {
   return xhr.responseText;
 }
 
-const txtUrl =
-  "https://raw.githubusercontent.com/chrischow/project-ace/main/rokr/components/";
+const txtUrl = "";
 
 window.MonacoEnvironment = {
   getWorker(moduleId, label){
@@ -125,22 +124,16 @@ const darkTheme = createTheme({
 
 function App() {
   // State
-  const [baseurl, setBaseurl] = useState(txtUrl);
-  const [filename, setFilename] = useState("");
+  const [siteUrl, setSiteUrl] = useState(txtUrl);
   const [code, setCode] = useState("");
   const [diffEditor, setDiffEditor] = useState(false);
   const [language, setLanguage] = useState("javascript");
   const [originalCode, setOriginalCode] = useState("");
   const [isDarkMode, setDarkMode] = useState(true);
-  const [treeData, setTreeData] = useState(SharepointUtil.folderData());
+  const [treeData, setTreeData] = useState([]);
 
   const editorRef = useRef(null);
   const debugConsoleFeed = false;
-  
-  const handleUrlChange = (event) => {
-    setBaseurl(event.target.value);
-    console.log(event.target.value);
-  };
   
   const handleCodeFileChange = (e) => {
     const file = e.target.files[0];
@@ -153,12 +146,6 @@ function App() {
       setOriginalCode(pCode => e.target.result);
     }
     reader.readAsText(file);
-  };
-
-  const loadCode = () => {
-    if (baseurl && filename) {
-      getCode(baseurl, filename, setCode);
-    }
   };
   
   function handleEditorWillMount(mnc) {
@@ -217,7 +204,13 @@ function App() {
           language={language}
           setLanguage={setLanguage}
         />
-        <Sidebar handleCodeFileChange={handleCodeFileChange} treeData={treeData}/>
+        <Sidebar 
+          handleCodeFileChange={handleCodeFileChange} 
+          treeData={treeData}
+          setTreeData={setTreeData}
+          siteUrl={siteUrl}
+          setSiteUrl={setSiteUrl}
+        />
         <Container maxWidth={false} disableGutters>
           <Box 
             component="main"
