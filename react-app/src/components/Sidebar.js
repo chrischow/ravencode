@@ -80,7 +80,7 @@ export default function Sidebar(props) {
                     id="outline-size-small" 
                     size="small"
                 />
-                <ListItemButton disablePadding disableGutters>
+                <ListItemButton disableGutters>
                     <ListItemIcon sx={{ pl: 2 }}>
                         <Link />
                     </ListItemIcon>

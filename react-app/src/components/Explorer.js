@@ -91,8 +91,6 @@ export default function Explorer(props) {
         : null}
     </StyledTreeItem>
   );
-  
-  console.log(props.treeData);
 
   return (
     <TreeView
