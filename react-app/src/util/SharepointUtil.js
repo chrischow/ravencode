@@ -80,7 +80,7 @@ export class SharepointUtil{
         srcFolder.addChild(new RavencodeFolderData("4", "rokr.txt", "file", ""));
         srcFolder.addChild(new RavencodeFolderData("6", "babel.txt", "file", ""));
         fakeData.addChild(srcFolder);
-        fakeData.addChild("5", "index.html", "file", "");
+        fakeData.addChild(new RavencodeFolderData("5", "index.html", "file", ""));
 
         return [fakeData];
     }

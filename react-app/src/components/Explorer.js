@@ -75,6 +75,7 @@ StyledTreeItem.propTypes = {
 export default function Explorer(props) {
   const renderTree = (node) => (
     <StyledTreeItem 
+      key={node.id}
       nodeId={node.id}
       labelText={node.dataName}
       labelIcon={(
@@ -91,6 +92,8 @@ export default function Explorer(props) {
     </StyledTreeItem>
   );
   
+  console.log(props.treeData);
+
   return (
     <TreeView
       aria-label="explorer"
