@@ -76,9 +76,10 @@ export class SharepointUtil{
     async getFileObjFrom(relativeUrl = null, type = "folders") {
         // Folders first
         const result = [];
-        const url = (relativeUrl === null 
+        const url = (relativeUrl === null
             ? new URL(`_api/web/${type}`, this.siteUrl)
-            : new URL(`_api/web/GetFolderByServerRelativeUrl('${relativeUrl}')/${type}`), this.siteUrl);
+            : new URL(`_api/web/GetFolderByServerRelativeUrl('${relativeUrl}')/${type}`, this.siteUrl));
+        console.log(url);
         var request = await fetch(url,
             {
                 method: 'GET',

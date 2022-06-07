@@ -36,7 +36,12 @@ export default function Sidebar(props) {
 
     function handleSiteUrl(event) {
         // Link up the data!
-        props.setTreeData(pData => SharepointUtil.folderData());
+        const util = new SharepointUtil(props.siteUrl);
+        util.getFileObjFrom()
+            .then((results)=>{
+                props.setTreeData(pData => results);
+            })
+        // props.setTreeData(pData => SharepointUtil.folderData());
     }
 
     function handleSiteUrlChange(event) {
