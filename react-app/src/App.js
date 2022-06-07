@@ -5,9 +5,10 @@ import Editor, { useMonaco, loader, DiffEditor } from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
 import Menubar from "./components/Menubar";
 import Sidebar from "./components/Sidebar";
-import { Box, Toolbar, CssBaseline, Container } from "@mui/material";
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { Box, Toolbar, CssBaseline, Container, Stack, Paper, Typography } from "@mui/material";
+import { ThemeProvider, createTheme, styled } from '@mui/material/styles';
 import { SharepointUtil, RavencodeFolderData } from './util/SharepointUtil';
+import ConsoleFeed from "./components/ConsoleFeed";
 
 function loadBlob(filename) {
   var xhr = new XMLHttpRequest();
@@ -122,6 +123,13 @@ const darkTheme = createTheme({
   },
 });
 
+const Item = styled(Paper)(({ theme }) => ({
+  backgroundColor: '#1e1e1e',
+  ...theme.typography.body2,
+  textAlign: 'left',
+  color: theme.palette.text.secondary,
+}));
+
 function App() {
   // State
   const [siteUrl, setSiteUrl] = useState(txtUrl);
@@ -212,6 +220,8 @@ function App() {
           setSiteUrl={setSiteUrl}
         />
         <Container maxWidth={false} disableGutters>
+          <Stack>
+            <Item>
           <Box 
             component="main"
             sx={{ flexGrow: 1, pt: 6
@@ -243,6 +253,11 @@ function App() {
                 />
                 }
           </Box>
+          </Item>
+          <Item>
+            <ConsoleFeed />
+          </Item>
+          </Stack>
         </Container>
         </React.Fragment>
       </Box>

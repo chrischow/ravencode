@@ -21,7 +21,8 @@ export class RavencodeFolderData{
 
 export class SharepointUtil{
     constructor(siteUrl) {
-        this.siteUrl = siteUrl
+        this.siteUrl = siteUrl;
+        console.log(siteUrl);
     }
     
     /**
@@ -79,7 +80,6 @@ export class SharepointUtil{
         const url = (relativeUrl === null
             ? new URL(`_api/web/${type}`, this.siteUrl)
             : new URL(`_api/web/GetFolderByServerRelativeUrl('${relativeUrl}')/${type}`, this.siteUrl));
-        console.log(url);
         var request = await fetch(url,
             {
                 method: 'GET',
