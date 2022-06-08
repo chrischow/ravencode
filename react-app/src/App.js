@@ -8,6 +8,7 @@ import Sidebar from "./components/Sidebar";
 import { Box, Toolbar, CssBaseline, Container, Stack, Paper, Typography } from "@mui/material";
 import { ThemeProvider, createTheme, styled } from '@mui/material/styles';
 import ConsoleFeed from "./components/ConsoleFeed";
+import APIPanel from "./components/APIPanel";
 
 function loadBlob(filename) {
   var xhr = new XMLHttpRequest();
@@ -133,11 +134,12 @@ function App() {
   // State
   const [siteUrl, setSiteUrl] = useState(txtUrl);
   const [code, setCode] = useState("");
-  const [diffEditor, setDiffEditor] = useState(false);
+  const [addEditor, setAddEditor] = useState(null);
   const [language, setLanguage] = useState("javascript");
   const [originalCode, setOriginalCode] = useState("");
   const [isDarkMode, setDarkMode] = useState(true);
   const [treeData, setTreeData] = useState([]);
+  const [apiBody, setApiBody] = useState(null);
 
   const editorRef = useRef(null);
   const debugConsoleFeed = false;
@@ -205,8 +207,8 @@ function App() {
         <React.Fragment>
         <CssBaseline />
         <Menubar 
-          diffEditor={diffEditor} 
-          setDiffEditor={setDiffEditor}
+          addEditor={addEditor} 
+          setAddEditor={setAddEditor}
           allLanguages={allLanguages}
           language={language}
           setLanguage={setLanguage}
@@ -221,37 +223,41 @@ function App() {
         <Container maxWidth={false} disableGutters>
           <Stack>
             <Item>
-          <Box 
-            component="main"
-            sx={{ flexGrow: 1, pt: 6
-          }}
-          >
-                {diffEditor 
-                ? 
-                <DiffEditor
-                  height="90vh"
-                  modified={code}
-                  original={originalCode}
-                  language={language}
-                  theme="vs-dark"
-                />
-                : 
-                <Editor
-                  height="90vh"
-                  defaultValue="/** CODE
-                  */"
-                  language={language}
-                  theme="vs-dark"
-                  onValidate={handleEditorValidation}
-                  value={code}
-                  onChange={handleCodeChange}
-                  onMount={handleEditorDidMount}
-                  beforeMount={handleEditorWillMount}
-                  // Why {bracketPairColorization: {enabled: true}} doesn't work is weird.
-                  options={{"bracketPairColorization.enabled": true}}
-                />
-                }
-          </Box>
+              <Box 
+                component="main"
+                sx={{ flexGrow: 1, pt: 6 }}
+              >
+                    {addEditor === "diffEditor"
+                    && 
+                    <DiffEditor
+                      height="90vh"
+                      modified={code}
+                      original={originalCode}
+                      language={language}
+                      theme="vs-dark"
+                    />}
+                    {addEditor === "apiTestor"
+                    &&
+                    <APIPanel apiBody={apiBody} setApiBody={setApiBody}/>
+                    }
+                    {addEditor === null
+                    &&
+                    <Editor
+                      height="90vh"
+                      defaultValue="/** CODE
+                      */"
+                      language={language}
+                      theme="vs-dark"
+                      onValidate={handleEditorValidation}
+                      value={code}
+                      onChange={handleCodeChange}
+                      onMount={handleEditorDidMount}
+                      beforeMount={handleEditorWillMount}
+                      // Why {bracketPairColorization: {enabled: true}} doesn't work is weird.
+                      options={{ "bracketPairColorization.enabled": true }}
+                    />
+                    }
+              </Box>
           </Item>
           <Item>
             <ConsoleFeed />

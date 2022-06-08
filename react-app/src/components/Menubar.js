@@ -5,8 +5,8 @@ import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import useScrollTrigger from '@mui/material/useScrollTrigger';
-import { ToggleButton, Box, IconButton } from '@mui/material';
-import { VerticalSplit } from '@mui/icons-material'
+import { ToggleButtonGroup, ToggleButton, Box, IconButton } from '@mui/material';
+import { VerticalSplit, Api } from '@mui/icons-material'
 import LanguageMenu from './LanguageMenu';
 
 function ElevationScroll(props) {
@@ -28,8 +28,8 @@ ElevationScroll.propTypes = {
 
 /**
  * 
- * @param {boolean} props.diffEditor If diffeditor is on
- * @param {function} props.setDiffEditor 
+ * @param {boolean} props.addEditor If diffeditor is on
+ * @param {function} props.setAddEditor 
  * @param {string} props.language The current Code language
  * @param {function} props.setLanguage
  * @param {array} props.allLanguages All the languages enabled
@@ -37,8 +37,8 @@ ElevationScroll.propTypes = {
  */
 export default function Menubar(props) {
 
-    function handleOnChange(e) {
-        props.setDiffEditor(pData => !pData);
+    function handleOnChange(e, value) {
+        props.setAddEditor(pData => value);
     };
   
     return (
@@ -70,15 +70,18 @@ export default function Menubar(props) {
                     </Typography>
                     <LanguageMenu {...props}/>
                     <Box sx={{ flexGrow: 1}}/>
-                    <ToggleButton
-                        value="check"
-                        selected={props.diffEditor}
-                        onChange={handleOnChange}
-                        size="small"
-                        color="info"
+                    <ToggleButtonGroup 
+                        onChange={handleOnChange} 
+                        exclusive
+                        value={props.addEditor}
                     >
-                        <VerticalSplit />
-                    </ToggleButton> 
+                        <ToggleButton value="apiTestor" size="small" color="info">
+                            <Api />
+                        </ToggleButton> 
+                        <ToggleButton value="diffEditor" size="small" color="info">
+                            <VerticalSplit />
+                        </ToggleButton> 
+                    </ToggleButtonGroup>
                 </Toolbar>
             </AppBar>
         </ElevationScroll>

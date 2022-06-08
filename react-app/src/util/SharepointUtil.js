@@ -86,7 +86,7 @@ export class SharepointUtil{
                 body: data
             });
         } catch(err) {
-            console.error(`Error: ${err}.`);
+            console.error(err);
         }
     }
 
@@ -95,31 +95,35 @@ export class SharepointUtil{
     async getFileObjFrom(relativeUrl = null, type = "folders") {
         // Folders first
         const result = [];
-        const url = (relativeUrl === null
-            ? new URL(`_api/web/${type}`, this.siteUrl)
-            : new URL(`_api/web/GetFolderByServerRelativeUrl('${relativeUrl}')/${type}`, this.siteUrl));
-        var request = await fetch(url,
-            {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json;odata=verbose'
+        try{
+            const url = (relativeUrl === null
+                ? new URL(`_api/web/${type}`, this.siteUrl)
+                : new URL(`_api/web/GetFolderByServerRelativeUrl('${relativeUrl}')/${type}`, this.siteUrl));
+            var request = await fetch(url,
+                {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json;odata=verbose'
+                    }
+                });
+            const mainJson = await request.json();
+            const unresolved = mainJson.d.results.map(async (node) => {
+                const data = new RavencodeFolderData(
+                    node.Name, 
+                    node.Name, 
+                    node.__metadata.type === "SP.Folder" ? "folder" : "file",
+                    node.ServerRelativeUrl);
+                if (node.__metadata.type === "SP.Folder" && node.ItemCount > 0) {
+                    const childFolderData = await this.getFileObjFrom(node.ServerRelativeUrl, "Folders");
+                    const childFileData = await this.getFileObjFrom(node.ServerRelativeUrl, "Files");
+                    data.addChild(childFolderData.concat(childFileData));
                 }
+                result.push(data);
             });
-        const mainJson = await request.json();
-        const unresolved = mainJson.d.results.map(async (node) => {
-            const data = new RavencodeFolderData(
-                node.Name, 
-                node.Name, 
-                node.__metadata.type === "SP.Folder" ? "folder" : "file",
-                node.ServerRelativeUrl);
-            if (node.__metadata.type === "SP.Folder" && node.ItemCount > 0) {
-                const childFolderData = await this.getFileObjFrom(node.ServerRelativeUrl, "Folders");
-                const childFileData = await this.getFileObjFrom(node.ServerRelativeUrl, "Files");
-                data.addChild(childFolderData.concat(childFileData));
-            }
-            result.push(data);
-        });
-        await Promise.all(unresolved);
+            await Promise.all(unresolved);
+        } catch(err) {
+            console.error(err);
+        }
         return result;
     }
 
