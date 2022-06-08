@@ -1,3 +1,4 @@
+import { AssessmentRounded } from '@mui/icons-material';
 import $ from 'jquery';
 
 export class RavencodeFolderData{
@@ -22,9 +23,22 @@ export class RavencodeFolderData{
 export class SharepointUtil{
     constructor(siteUrl) {
         this.siteUrl = siteUrl;
-        console.log(siteUrl);
     }
     
+    getXRequestDigest() {
+        const reqDigest = $.ajax({
+            url: new URL("_api/contextinfo", this.siteUrl),
+            method: 'POST',
+            async: false,
+            headers: {
+                'Accept': 'application/json;odata=verbose'
+            },
+            success: data => data,
+            error: (err) => console.log(JSON.stringify(err))
+        })
+        return reqDigest.responseJSON.d.GetContextWebInformation.FormDigestValue;
+    }
+
     /**
      * FOLDER --
      * _api/web/folders
@@ -46,7 +60,7 @@ export class SharepointUtil{
      * text returned. responseText
      * _api/web/GetFileByServerRelativeUrl('')/$value
      */
-    async getRawFileData(relativeUrl) {
+    async getTextFileData(relativeUrl) {
         var request = await fetch(new URL(`_api/web/GetFileByServerRelativeUrl('${relativeUrl}')/$value`, 
             this.siteUrl),
             {
@@ -58,18 +72,22 @@ export class SharepointUtil{
         return request.responseText;
     }
 
-    getXRequestDigest() {
-        const reqDigest = $.ajax({
-            url: new URL("_api/contextinfo", this.siteUrl),
-            method: 'POST',
-            async: false,
-            headers: {
-                'Accept': 'application/json;odata=verbose'
-            },
-            success: data => data,
-            error: (err) => console.log(JSON.stringify(err))
-        })
-        return reqDigest.responseJSON.d.GetContextWebInformation.FormDigestValue;
+    async updateTextFile(relativeUrl, data) {
+        try{
+            var request = await fetch(new URL(`_api/web/GetFileByServerRelativeUrl('${relativeUrl}')/$value`, 
+            this.siteUrl),
+            {
+                method: 'POST',
+                headers: {
+                    "X-HTTP-Method": "PUT",
+                    "Content-Length": data.length,
+                    "X-RequestDigest": this.getXRequestDigest()
+                },
+                body: data
+            });
+        } catch(err) {
+            console.error(`Error: ${err}.`);
+        }
     }
 
     // This is a recursive function that retrieves the whole folder and file structure if nothing is passed.
