@@ -238,7 +238,24 @@ function App() {
                     />}
                     {addEditor === "apiTestor"
                     &&
-                    <APIPanel apiBody={apiBody} setApiBody={setApiBody}/>
+                    <>
+                      <APIPanel apiBody={apiBody} setApiBody={setApiBody}/>
+                      <Typography variant="subtitle2" color="#FFFFFF" sx={{ ml: "30px"}}>
+                        Body Data (json)
+                      </Typography>
+                      <Editor
+                        height="40vh"
+                        language="json"
+                        theme="vs-dark"
+                        onValidate={handleEditorValidation}
+                        value={code}
+                        onChange={handleCodeChange}
+                        onMount={handleEditorDidMount}
+                        beforeMount={handleEditorWillMount}
+                        // Why {bracketPairColorization: {enabled: true}} doesn't work is weird.
+                        options={{ "bracketPairColorization.enabled": true }}
+                      />
+                    </>
                     }
                     {addEditor === null
                     &&
