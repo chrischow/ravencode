@@ -5,8 +5,8 @@ import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import useScrollTrigger from '@mui/material/useScrollTrigger';
-import { ToggleButtonGroup, ToggleButton, Box, IconButton } from '@mui/material';
-import { VerticalSplit, Api } from '@mui/icons-material'
+import { ToggleButtonGroup, ToggleButton, Box, IconButton, Tooltip } from '@mui/material';
+import { VerticalSplit, Api, PlayCircle } from '@mui/icons-material'
 import LanguageMenu from './LanguageMenu';
 
 function ElevationScroll(props) {
@@ -41,6 +41,10 @@ export default function Menubar(props) {
         props.setAddEditor(pData => value);
     };
   
+    function handleEval(e, value) {
+        eval(props.code);
+    }
+
     return (
         <ElevationScroll {...props}>
             <AppBar 
@@ -68,19 +72,28 @@ export default function Menubar(props) {
                     >
                         .::RDO's integrated text editor::.
                     </Typography>
-                    <LanguageMenu {...props}/>
+                    {props.addEditor !== "apiTestor" &&
+                    <LanguageMenu {...props}/>}
                     <Box sx={{ flexGrow: 1}}/>
+                    {props.language === "javascript" &&
+                    <IconButton sx={{ pl: 1 }} onClick={handleEval}>
+                        <PlayCircle color="secondary"/>
+                    </IconButton>}
                     <ToggleButtonGroup 
                         onChange={handleOnChange} 
                         exclusive
                         value={props.addEditor}
                     >
-                        <ToggleButton value="apiTestor" size="small" color="info">
-                            <Api />
-                        </ToggleButton> 
-                        <ToggleButton value="diffEditor" size="small" color="info">
-                            <VerticalSplit />
-                        </ToggleButton> 
+                        <Tooltip title="API Testor">
+                            <ToggleButton value="apiTestor" size="small" color="info">
+                                <Api />
+                            </ToggleButton> 
+                        </Tooltip>
+                        <Tooltip title="Diff Editor">
+                            <ToggleButton value="diffEditor" size="small" color="info">
+                                <VerticalSplit />
+                            </ToggleButton> 
+                        </Tooltip>
                     </ToggleButtonGroup>
                 </Toolbar>
             </AppBar>

@@ -5,10 +5,15 @@ import Editor, { useMonaco, loader, DiffEditor } from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
 import Menubar from "./components/Menubar";
 import Sidebar from "./components/Sidebar";
-import { Box, Toolbar, CssBaseline, Container, Stack, Paper, Typography } from "@mui/material";
+import { Box, Toolbar, CssBaseline, Container, Stack, Paper, Typography, Chip } from "@mui/material";
+import { Snackbar } from "@mui/material";
+import MuiAlert from "@mui/material/Alert";
 import { ThemeProvider, createTheme, styled } from '@mui/material/styles';
 import ConsoleFeed from "./components/ConsoleFeed";
 import APIPanel from "./components/APIPanel";
+import { DataObject } from "@mui/icons-material";
+import { useTabsList } from "@mui/base";
+import { SharepointUtil } from "./util/SharepointUtil";
 
 function loadBlob(filename) {
   var xhr = new XMLHttpRequest();
@@ -130,6 +135,10 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
 function App() {
   // State
   const [siteUrl, setSiteUrl] = useState(txtUrl);
@@ -140,9 +149,15 @@ function App() {
   const [isDarkMode, setDarkMode] = useState(true);
   const [treeData, setTreeData] = useState([]);
   const [apiBody, setApiBody] = useState(null);
+  const [util, setUtil] = React.useState(new SharepointUtil());
   const [editorFns, setEditorFns] = useState({
     saveFilePath: null
   });
+  const [alertOptions, setAlertOptions] = useState({
+    open: false,
+    message: "",
+    severity: "info"
+  })
 
   const editorRef = useRef(null);
   const debugConsoleFeed = false;
@@ -175,10 +190,27 @@ function App() {
     editor.addCommand(monaco.KeyMod.Alt | monaco.KeyMod.Shift | monaco.KeyCode.KeyF, () => {
       editor.trigger('editor','editor.action.formatDocument');
     });
-    editor.addCommand(monaco.KeyMod.Ctrl | monaco.KeyCode.KeyS, () => {
-      // TODO: Add in Ctrl+S Save binding to save either local or Sharepoint.
+    editor.addCommand(monaco.KeyMod.Alt | monaco.KeyMod.Shift | monaco.KeyCode.KeyS, () => {
+      // Ctrl+S doesn't work. Neither does Ctrl+Shift+S.
       if(editorFns.saveFilePath){
-        console.log(editorFns.saveFilePath);
+        setAlertOptions(pOpt => {
+          return {
+            open: true,
+            message: `Saving to ${editorFns.saveFilePath}`,
+            severity: "info"
+          }
+        });
+        util.updateTextFile(editorFns.saveFilePath, code)
+          .then((request) => {
+            console.log(request.statusText);
+            setAlertOptions(pOpt => {
+              return {
+                open: true,
+                message: `Saved to ${editorFns.saveFilePath}!`,
+                severity: "success"
+              }
+            });
+          })
       }
     });
   };
@@ -209,6 +241,19 @@ function App() {
     setCode(pCode => e);
   };
 
+  function handleAlertClose(event, reason) {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setAlertOptions(pOpt => {
+      return {
+        ...pOpt,
+        open: false
+      }
+    })
+  };
+
   return (
     <ThemeProvider theme={darkTheme}>
       <Box sx={{ display: 'flex' }}>
@@ -220,6 +265,7 @@ function App() {
           allLanguages={allLanguages}
           language={language}
           setLanguage={setLanguage}
+          code={code}
         />
         <Sidebar 
           handleCodeFileChange={handleCodeFileChange} 
@@ -230,6 +276,8 @@ function App() {
           setCode={setCode}
           setOriginalCode={setOriginalCode}
           setEditorFns={setEditorFns}
+          util={util}
+          setUtil={setUtil}
         />
         <Container maxWidth={false} disableGutters>
           <Stack>
@@ -251,8 +299,8 @@ function App() {
                     &&
                     <>
                       <APIPanel apiBody={apiBody} setApiBody={setApiBody}/>
-                      <Typography variant="subtitle2" color="#FFFFFF" sx={{ ml: "30px"}}>
-                        Body Data (json)
+                      <Typography variant="subtitle2" color="#FFFFFF" sx={{ ml: "30px", mb: "4px"}}>
+                        Body Data <Chip icon={<DataObject/>} label="JSON" color="secondary" size="small"/>
                       </Typography>
                       <Editor
                         height="40vh"
@@ -294,6 +342,11 @@ function App() {
         </Container>
         </React.Fragment>
       </Box>
+      <Snackbar open={alertOptions.open} autoHideDuration={6000} onClose={handleAlertClose}>
+        <Alert onClose={handleAlertClose} severity={alertOptions.severity} sx={{ width: '100%' }}>
+          {alertOptions.message}
+        </Alert>
+      </Snackbar>
     </ThemeProvider>
   );
 }
