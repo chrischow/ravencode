@@ -28,7 +28,9 @@ const Input = styled('input')({
  * @returns 
  */
 export default function Sidebar(props) {
-
+    
+    const [util, setUtil] = React.useState(new SharepointUtil());
+    
     const localFile = "";
     
     function handleCodeLoad(event) {
@@ -38,7 +40,7 @@ export default function Sidebar(props) {
 
     function handleSiteUrl(event) {
         // Link up the data!
-        const util = new SharepointUtil(props.siteUrl);
+        util.setSiteUrl(props.siteUrl);
         util.getFileObjFrom()
             .then((results)=>{
                 props.setTreeData(pData => results);
@@ -119,7 +121,12 @@ export default function Sidebar(props) {
                 </ListSubheader>
             }
         >
-            <Explorer treeData={props.treeData}/>
+            <Explorer 
+                treeData={props.treeData} 
+                setCode={props.setCode} 
+                setOriginalCode={props.setOriginalCode}
+                setEditorFns={props.setEditorFns}
+                util={util}/>
         </List>
       </Drawer>
   );

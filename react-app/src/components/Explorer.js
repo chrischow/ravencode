@@ -89,7 +89,19 @@ export default function Explorer(props) {
       value={"test"}
       onDoubleClick={node.type === "folder" 
         ? null 
-        : () => console.log(node.path)} // Each node doesn't have a value. so the alternative is to customise the functions.
+        : () => {
+          props.util.getTextFileData(node.path)
+            .then((data) => {
+              props.setOriginalCode(pData => data);
+              props.setCode(pData => data);
+            });
+          props.setEditorFns(prevFunctions => {
+            return {
+              ...prevFunctions,
+              saveFilePath: node.path
+            };
+          })
+        }} // Each node doesn't have a value. so the alternative is to customise the functions.
     >
       {node.children.length > 0
         ? node.children.map((node) => renderTree(node))

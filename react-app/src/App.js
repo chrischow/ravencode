@@ -140,6 +140,9 @@ function App() {
   const [isDarkMode, setDarkMode] = useState(true);
   const [treeData, setTreeData] = useState([]);
   const [apiBody, setApiBody] = useState(null);
+  const [editorFns, setEditorFns] = useState({
+    saveFilePath: null
+  });
 
   const editorRef = useRef(null);
   const debugConsoleFeed = false;
@@ -172,7 +175,12 @@ function App() {
     editor.addCommand(monaco.KeyMod.Alt | monaco.KeyMod.Shift | monaco.KeyCode.KeyF, () => {
       editor.trigger('editor','editor.action.formatDocument');
     });
-    // TODO: Add in Ctrl+S Save binding to save either local or Sharepoint.
+    editor.addCommand(monaco.KeyMod.Ctrl | monaco.KeyCode.KeyS, () => {
+      // TODO: Add in Ctrl+S Save binding to save either local or Sharepoint.
+      if(editorFns.saveFilePath){
+        console.log(editorFns.saveFilePath);
+      }
+    });
   };
 
   /**
@@ -219,6 +227,9 @@ function App() {
           setTreeData={setTreeData}
           siteUrl={siteUrl}
           setSiteUrl={setSiteUrl}
+          setCode={setCode}
+          setOriginalCode={setOriginalCode}
+          setEditorFns={setEditorFns}
         />
         <Container maxWidth={false} disableGutters>
           <Stack>

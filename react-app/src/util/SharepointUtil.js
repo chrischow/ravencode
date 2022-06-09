@@ -14,6 +14,10 @@ export class RavencodeFolderData{
             this.ext = match ? match[1] : "";
         }
     }
+    
+    concatChildren(children) {
+        this.children = this.children.concat(children);
+    }
 
     addChild(child) {
         this.children.push(child);
@@ -22,7 +26,17 @@ export class RavencodeFolderData{
 
 export class SharepointUtil{
     constructor(siteUrl) {
-        this.siteUrl = siteUrl;
+        if (siteUrl) {
+            this.setSiteUrl(siteUrl);
+        } else {
+            this.siteUrl = "";
+        }
+    }
+    
+    setSiteUrl(siteUrl) {
+        /\/$/.test(siteUrl) 
+            ? this.siteUrl = siteUrl
+            : this.siteUrl = siteUrl + "/";
     }
     
     getXRequestDigest() {
@@ -61,20 +75,23 @@ export class SharepointUtil{
      * _api/web/GetFileByServerRelativeUrl('')/$value
      */
     async getTextFileData(relativeUrl) {
-        var request = await fetch(new URL(`_api/web/GetFileByServerRelativeUrl('${relativeUrl}')/$value`, 
+        var request;
+        try {
+        request = await fetch(new URL(`_api/web/GetFileByServerRelativeUrl('${relativeUrl}')/$value`, 
             this.siteUrl),
             {
                 method: 'GET',
-                headers: {
-                    "X-FORMS_BASE_AUTH_ACCEPTED": "f"
-                }
             });
-        return request.responseText;
+        } catch(err) {
+            console.error(err);
+        }
+        return request.text();
     }
 
     async updateTextFile(relativeUrl, data) {
+        var request;
         try{
-            var request = await fetch(new URL(`_api/web/GetFileByServerRelativeUrl('${relativeUrl}')/$value`, 
+            request = await fetch(new URL(`_api/web/GetFileByServerRelativeUrl('${relativeUrl}')/$value`, 
             this.siteUrl),
             {
                 method: 'POST',
@@ -88,6 +105,7 @@ export class SharepointUtil{
         } catch(err) {
             console.error(err);
         }
+        return request;
     }
 
     // This is a recursive function that retrieves the whole folder and file structure if nothing is passed.
@@ -106,21 +124,26 @@ export class SharepointUtil{
                         'Accept': 'application/json;odata=verbose'
                     }
                 });
+            // console.log(url.href);
+            // console.log(request.status);
+            // console.log(request.ok);
             const mainJson = await request.json();
-            const unresolved = mainJson.d.results.map(async (node) => {
-                const data = new RavencodeFolderData(
-                    node.Name, 
-                    node.Name, 
-                    node.__metadata.type === "SP.Folder" ? "folder" : "file",
-                    node.ServerRelativeUrl);
-                if (node.__metadata.type === "SP.Folder" && node.ItemCount > 0) {
-                    const childFolderData = await this.getFileObjFrom(node.ServerRelativeUrl, "Folders");
-                    const childFileData = await this.getFileObjFrom(node.ServerRelativeUrl, "Files");
-                    data.addChild(childFolderData.concat(childFileData));
-                }
-                result.push(data);
-            });
-            await Promise.all(unresolved);
+            // console.log(mainJson);
+            if (Array.isArray(mainJson.d.results)) {
+                await Promise.all(mainJson.d.results.map(async (node) => {
+                    const data = new RavencodeFolderData(
+                        node.Name, 
+                        node.Name, 
+                        node.__metadata.type === "SP.Folder" ? "folder" : "file",
+                        node.ServerRelativeUrl);
+                        if (node.__metadata.type === "SP.Folder" && node.ItemCount > 0) {
+                            const childFolderData = await this.getFileObjFrom(node.ServerRelativeUrl + "/", "Folders");
+                            const childFileData = await this.getFileObjFrom(node.ServerRelativeUrl + "/", "Files");
+                            data.concatChildren(childFolderData.concat(childFileData));
+                        }
+                    result.push(data);
+                }));
+            }
         } catch(err) {
             console.error(err);
         }
