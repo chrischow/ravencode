@@ -1,10 +1,35 @@
 import React from 'react';
-import { ToggleButton, Container, Nav, Navbar, Button, NavDropdown } from "react-bootstrap";
+
+import PropTypes from 'prop-types';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import useScrollTrigger from '@mui/material/useScrollTrigger';
+import { ToggleButtonGroup, ToggleButton, Box, IconButton } from '@mui/material';
+import { VerticalSplit, Api } from '@mui/icons-material'
+import LanguageMenu from './LanguageMenu';
+
+function ElevationScroll(props) {
+    const { children } = props;
+
+    const trigger = useScrollTrigger({
+        disableHysteresis: true,
+        threshold: 0
+    });
+
+    return React.cloneElement(children, {
+        elevation: trigger ? 4 : 0,
+    });
+}
+
+ElevationScroll.propTypes = {
+    children: PropTypes.element.isRequired
+};
 
 /**
  * 
- * @param {boolean} props.diffEditor If diffeditor is on
- * @param {function} props.setDiffEditor 
+ * @param {boolean} props.addEditor If diffeditor is on
+ * @param {function} props.setAddEditor 
  * @param {string} props.language The current Code language
  * @param {function} props.setLanguage
  * @param {array} props.allLanguages All the languages enabled
@@ -12,63 +37,53 @@ import { ToggleButton, Container, Nav, Navbar, Button, NavDropdown } from "react
  */
 export default function Menubar(props) {
 
-    function handleOnChange(e) {
-        const {name, value, type, checked} = e.target;
-        props.setDiffEditor(pData => checked);
+    function handleOnChange(e, value) {
+        props.setAddEditor(pData => value);
     };
-
-    function handleLangSelect(eventKey, event) {
-        props.setLanguage(pLang => eventKey);
-    }
-
-    const navDropItems = props.allLanguages.map((x, idx) => {
-        return (
-            <NavDropdown.Item 
-                active={x === props.language}
-                key={x}
-                eventKey={x}>
-                {x}
-            </NavDropdown.Item>
-        )
-    })
-    
+  
     return (
-        <Navbar bg="dark" variant="dark">
-            <Container fluid>
-                <Navbar.Brand href="#home">
-                    <img 
-                        src="./raven32.png"
-                        height="30"
-                        className='d-inline-block align-top'
-                        />{' '}
-                    RavenITE [RDO's integrated text editor]
-                </Navbar.Brand>
-                <Navbar.Collapse id="navbar">
-                    <Nav
-                        className="me-auto my-2 my-lg-0"
-                        navbarScroll
+        <ElevationScroll {...props}>
+            <AppBar 
+                position="fixed"
+                sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+            >
+                <Toolbar variant="dense">
+                    <IconButton sx={{ pl: 0 }}>
+                        <img src="./raven32.png"/>
+                    </IconButton>
+                    <Typography 
+                        variant="subtitle1" 
+                        nowrap="true" 
+                        component="div" 
+                        sx={{ mr: 1 }}
                     >
-                        <NavDropdown 
-                            title={props.language} 
-                            id="nav-dropdown"
-                            onSelect={handleLangSelect}
-                            >
-                            {navDropItems}
-                        </NavDropdown>
-                    </Nav>
-                    <Nav>
-                        <ToggleButton
-                            id="toggle-check"
-                            type="checkbox"
-                            onChange={handleOnChange}
-                            checked={props.diffEditor}
-                            value="1"
-                            variant="outline-primary">
-                            Diff Editor {props.diffEditor ? "ON" : "OFF"}
-                        </ToggleButton>
-                    </Nav>
-                </Navbar.Collapse>
-            </Container>
-        </Navbar>
+                        Ravencode
+                    </Typography>
+                    <Typography 
+                        variant="subtitle2" 
+                        nowrap="true" 
+                        component="div" 
+                        sx={{ mr: 4}}
+                        color="secondary"
+                    >
+                        .::RDO's integrated text editor::.
+                    </Typography>
+                    <LanguageMenu {...props}/>
+                    <Box sx={{ flexGrow: 1}}/>
+                    <ToggleButtonGroup 
+                        onChange={handleOnChange} 
+                        exclusive
+                        value={props.addEditor}
+                    >
+                        <ToggleButton value="apiTestor" size="small" color="info">
+                            <Api />
+                        </ToggleButton> 
+                        <ToggleButton value="diffEditor" size="small" color="info">
+                            <VerticalSplit />
+                        </ToggleButton> 
+                    </ToggleButtonGroup>
+                </Toolbar>
+            </AppBar>
+        </ElevationScroll>
     )
 }
