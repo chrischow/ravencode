@@ -360,7 +360,7 @@ function App() {
         </Container>
         </React.Fragment>
       </Box>
-      <Snackbar open={alertOptions.open} autoHideDuration={6000} onClose={handleAlertClose}>
+      <Snackbar open={alertOptions.open} autoHideDuration={6000} onClose={handleAlertClose} anchorOrigin={{vertical: 'bottom', horizontal: 'left'}}>
         <Alert onClose={handleAlertClose} severity={alertOptions.severity} sx={{ width: '100%' }}>
           {alertOptions.message}
         </Alert>

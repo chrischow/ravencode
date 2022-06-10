@@ -31,7 +31,6 @@ export default function Sidebar(props) {
     
     const localFile = "";
     
-    
     function handleCodeLoad(event) {
         event.preventDefault();
         console.log(event);
