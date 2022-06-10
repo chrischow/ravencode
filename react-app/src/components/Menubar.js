@@ -56,7 +56,7 @@ export default function Menubar(props) {
                 sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
             >
                 <Toolbar variant="dense">
-                    <IconButton sx={{ pl: 0 }}>
+                    <IconButton sx={{ pl: 0 }} onClick={() => props.setDrawerState(pState => true)}>
                         <img src="./raven32.png"/>
                     </IconButton>
                     <Typography 

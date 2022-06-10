@@ -150,6 +150,7 @@ function App() {
   const [treeData, setTreeData] = useState([]);
   const [apiBody, setApiBody] = useState(null);
   const [util, setUtil] = React.useState(new SharepointUtil());
+  const [drawerState, setDrawerState] = React.useState(false);
   const [editorFns, setEditorFns] = useState({
     saveFilePath: null,
     saveCodeFn: null
@@ -279,6 +280,7 @@ function App() {
           setLanguage={setLanguage}
           code={code}
           editorFns={editorFns}
+          setDrawerState={setDrawerState}
         />
         <Sidebar 
           handleCodeFileChange={handleCodeFileChange} 
@@ -291,6 +293,9 @@ function App() {
           setEditorFns={setEditorFns}
           util={util}
           setUtil={setUtil}
+          setDrawerState={setDrawerState}
+          drawerState={drawerState}
+          setAlertOptions={setAlertOptions}
         />
         <Container maxWidth={false} disableGutters>
           <Stack>

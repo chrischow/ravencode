@@ -90,17 +90,28 @@ export default function Explorer(props) {
       onDoubleClick={node.type === "folder" 
         ? null 
         : () => {
-          props.util.getTextFileData(node.path)
-            .then((data) => {
-              props.setOriginalCode(pData => data);
-              props.setCode(pData => data);
-            });
-          props.setEditorFns(prevFunctions => {
-            return {
-              ...prevFunctions,
-              saveFilePath: node.path
-            };
-          })
+          if(/.(txt|html|htm)$/.test(node.path))
+          {
+            props.util.getTextFileData(node.path)
+              .then((data) => {
+                props.setOriginalCode(pData => data);
+                props.setCode(pData => data);
+              });
+            props.setEditorFns(prevFunctions => {
+              return {
+                ...prevFunctions,
+                saveFilePath: node.path
+              };
+            })
+          } else {
+            props.setAlertOptions(pOpts => {
+              return {
+                open: true,
+                message:`only can open txt/html/htm files!`,
+                severity: "error"
+              }
+            })
+          }
         }} // Each node doesn't have a value. so the alternative is to customise the functions.
     >
       {node.children.length > 0

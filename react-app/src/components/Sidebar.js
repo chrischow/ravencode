@@ -8,11 +8,11 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import { UploadFile, Link } from '@mui/icons-material';
+import { UploadFile, Link, ReportProblemSharp } from '@mui/icons-material';
 import Explorer from './Explorer';
 import { RavencodeFolderData, SharepointUtil } from '../util/SharepointUtil';
 
-const drawerWidth = 240;
+const drawerWidth = 400;
 
 const Input = styled('input')({
     display: 'none',
@@ -31,23 +31,40 @@ export default function Sidebar(props) {
     
     const localFile = "";
     
+    
     function handleCodeLoad(event) {
         event.preventDefault();
         console.log(event);
     }
 
     function handleSiteUrl(event) {
-        // Link up the data!
         props.util.setSiteUrl(props.siteUrl);
         props.util.getFileObjFrom()
             .then((results)=>{
                 props.setTreeData(pData => results);
             })
-        // props.setTreeData(pData => SharepointUtil.folderData());
+            .catch((err) => {
+                props.setAlertOptions(opt => {
+                    return {
+                        open: true,
+                        message: `${err.name}: ${err.message}`,
+                        severity: 'error'
+                    }
+                })
+                console.error(err);
+            });
     }
 
     function handleSiteUrlChange(event) {
         props.setSiteUrl(pData => event.target.value);
+    }
+
+    function handleDrawerClose(event) {
+        if (event.type === 'keydown' && (event.key ==='Tab' || event.key ==='Shift')) {
+            return;
+        }
+
+        props.setDrawerState(pData => false);
     }
 
   return (
@@ -60,7 +77,8 @@ export default function Sidebar(props) {
             boxSizing: 'border-box',
           },
         }}
-        variant="permanent"
+        open={props.drawerState}
+        onClose={handleDrawerClose}
         anchor="left"
       >
         <Toolbar />
@@ -99,11 +117,12 @@ export default function Sidebar(props) {
                     id="outline-size-small" 
                     size="small"
                     onChange={handleSiteUrlChange}
+                    fullWidth
                 >
                     {props.siteUrl}
                 </TextField>
-                <ListItemButton onClick={handleSiteUrl} disableGutters>
-                    <ListItemIcon sx={{ pl: 2 }}>
+                <ListItemButton onClick={handleSiteUrl} disableGutters sx={{ ml: 1   }}>
+                    <ListItemIcon>
                         <Link />
                     </ListItemIcon>
                 </ListItemButton>
@@ -124,6 +143,7 @@ export default function Sidebar(props) {
                 setCode={props.setCode} 
                 setOriginalCode={props.setOriginalCode}
                 setEditorFns={props.setEditorFns}
+                setAlertOptions={props.setAlertOptions}
                 util={props.util}/>
         </List>
       </Drawer>
