@@ -151,7 +151,8 @@ function App() {
   const [apiBody, setApiBody] = useState(null);
   const [util, setUtil] = React.useState(new SharepointUtil());
   const [editorFns, setEditorFns] = useState({
-    saveFilePath: null
+    saveFilePath: null,
+    saveCodeFn: null
   });
   const [alertOptions, setAlertOptions] = useState({
     open: false,
@@ -180,6 +181,34 @@ function App() {
     // alert(new URL("rsaf/rdo.js",import.meta.url));
   }
 
+  function saveCode() {
+    if(editorFns.saveFilePath){
+      // console.log("init save");
+      setAlertOptions(pOpt => {
+        return {
+          open: true,
+          message: `Saving to ${editorFns.saveFilePath}`,
+          severity: "info"
+        }
+      });
+      util.updateTextFile(editorFns.saveFilePath, code)
+        .then((request) => {
+        //   console.log(request.status);
+          setAlertOptions(pOpt => {
+            return {
+              open: true,
+              message: `Saved to ${editorFns.saveFilePath}!`,
+              severity: "success"
+            }
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+        });
+    } else {
+        console.log("no file path");
+    }
+  }
   /**
    * To get the reference to the editor DOM object and add in key bindings
    * @param {object} editor 
@@ -192,26 +221,7 @@ function App() {
     });
     editor.addCommand(monaco.KeyMod.Alt | monaco.KeyMod.Shift | monaco.KeyCode.KeyS, () => {
       // Ctrl+S doesn't work. Neither does Ctrl+Shift+S.
-      if(editorFns.saveFilePath){
-        setAlertOptions(pOpt => {
-          return {
-            open: true,
-            message: `Saving to ${editorFns.saveFilePath}`,
-            severity: "info"
-          }
-        });
-        util.updateTextFile(editorFns.saveFilePath, code)
-          .then((request) => {
-            console.log(request.statusText);
-            setAlertOptions(pOpt => {
-              return {
-                open: true,
-                message: `Saved to ${editorFns.saveFilePath}!`,
-                severity: "success"
-              }
-            });
-          })
-      }
+      saveCode();
     });
   };
 
@@ -253,6 +263,8 @@ function App() {
       }
     })
   };
+  
+  editorFns.saveCodeFn = saveCode;
 
   return (
     <ThemeProvider theme={darkTheme}>
@@ -266,6 +278,7 @@ function App() {
           language={language}
           setLanguage={setLanguage}
           code={code}
+          editorFns={editorFns}
         />
         <Sidebar 
           handleCodeFileChange={handleCodeFileChange} 

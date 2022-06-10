@@ -6,7 +6,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import useScrollTrigger from '@mui/material/useScrollTrigger';
 import { ToggleButtonGroup, ToggleButton, Box, IconButton, Tooltip } from '@mui/material';
-import { VerticalSplit, Api, PlayCircle } from '@mui/icons-material'
+import { VerticalSplit, Api, PlayCircle, Save } from '@mui/icons-material'
 import LanguageMenu from './LanguageMenu';
 
 function ElevationScroll(props) {
@@ -40,6 +40,10 @@ export default function Menubar(props) {
     function handleOnChange(e, value) {
         props.setAddEditor(pData => value);
     };
+    
+    function handleSave(e, value) {
+        props.editorFns.saveCodeFn();
+    }
   
     function handleEval(e, value) {
         eval(props.code);
@@ -75,9 +79,15 @@ export default function Menubar(props) {
                     {props.addEditor !== "apiTestor" &&
                     <LanguageMenu {...props}/>}
                     <Box sx={{ flexGrow: 1}}/>
+                    {props.editorFns.saveFilePath &&
+                    <Tooltip title={`Save to ${props.editorFns.saveFilePath}`}>
+                        <IconButton sx={{ pl: 3 }} onClick={handleSave}>
+                            <Save color="secondary"/>
+                        </IconButton>
+                    </Tooltip>}
                     {props.language === "javascript" &&
                     <IconButton sx={{ pl: 1 }} onClick={handleEval}>
-                        <PlayCircle color="secondary"/>
+                        <PlayCircle color="danger"/>
                     </IconButton>}
                     <ToggleButtonGroup 
                         onChange={handleOnChange} 
