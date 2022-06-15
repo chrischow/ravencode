@@ -186,6 +186,10 @@ function App() {
     reader.readAsText(file);
   };
 
+  function handleDiffCodeChange(e) {
+    setCode(pCode => e);
+  }
+
   function handleCodeChange(e) {
     setCode(pCode => e);
   };
@@ -238,9 +242,12 @@ function App() {
         <Container maxWidth={false} disableGutters>
           <Stack>
             <Item>
+              <Box sx={{ height: "48px" }}>
+                &nbsp;
+              </Box>
               <Box 
                 component="main"
-                sx={{ flexGrow: 1, pt: 6 }}
+                sx={{ flexGrow: 1 }}
               >
                     {addEditor === "diffEditor"
                     && 
@@ -250,7 +257,8 @@ function App() {
                       }
                       width="100%"
                       mode={language}
-                      onChange={handleCodeChange}
+                      onChange={handleDiffCodeChange}
+                      theme="monokai"
                     />}
                     {addEditor === "apiTestor"
                     &&

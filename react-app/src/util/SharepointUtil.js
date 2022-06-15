@@ -1,4 +1,3 @@
-import { AssessmentRounded } from '@mui/icons-material';
 import $ from 'jquery';
 
 export class RavencodeFolderData{
