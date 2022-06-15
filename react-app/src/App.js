@@ -1,8 +1,23 @@
 import "./App.css";
 import React from 'react';
 import { useState, useEffect, useRef } from "react";
-import Editor, { useMonaco, loader, DiffEditor } from "@monaco-editor/react";
-import * as monaco from "monaco-editor";
+
+import AceEditor from 'react-ace';
+import { diff as DiffEditor } from 'react-ace';
+
+import "ace-builds/src-noconflict/mode-javascript";
+import "ace-builds/src-noconflict/mode-html";
+import "ace-builds/src-noconflict/mode-markdown";
+import "ace-builds/src-noconflict/mode-css";
+import "ace-builds/src-noconflict/mode-jsx";
+import "ace-builds/src-noconflict/mode-xml";
+import "ace-builds/src-noconflict/mode-json";
+import "ace-builds/src-noconflict/mode-sql";
+import "ace-builds/src-noconflict/mode-vbscript";
+
+import "ace-builds/src-noconflict/theme-monokai";
+import "ace-builds/src-noconflict/ext-language_tools";
+
 import Menubar from "./components/Menubar";
 import Sidebar from "./components/Sidebar";
 import { Box, Toolbar, CssBaseline, Container, Stack, Paper, Typography, Chip } from "@mui/material";
@@ -25,57 +40,6 @@ function loadBlob(filename) {
 
 const txtUrl = "";
 
-window.MonacoEnvironment = {
-  getWorker(moduleId, label){
-    switch (label) {
-      case 'css':
-      case 'less':
-      case 'scss':
-        return new Worker(URL.createObjectURL(new Blob(
-          [loadBlob('css.worker')],
-          {
-            type: "text/javascript"
-          }
-          )));
-      case 'handlebars':
-      case 'html':
-      case 'razor':
-        return new Worker(URL.createObjectURL(new Blob(
-          [loadBlob('html.worker')],
-          {
-            type: "text/javascript"
-          }
-          )));
-      case 'json':
-        return new Worker(URL.createObjectURL(new Blob(
-          [loadBlob('json.worker')],
-          {
-            type: "text/javascript"
-          }
-          )));
-      case 'javascript':
-      case 'typescript':
-        {
-          return new Worker(URL.createObjectURL(new Blob(
-            [loadBlob('ts.worker')],
-          {
-            type: "text/javascript"
-          }
-          )));
-        }
-      default:
-        return new Worker(URL.createObjectURL(new Blob(
-          [loadBlob('editor.worker')],
-          {
-            type: "text/javascript"
-          }
-          )));
-    }
-  }
-}
-
-loader.config({ monaco });
-
 const getCode = (url, filename, callback) => {
   // Retrieve text
   var xhr = new XMLHttpRequest();
@@ -93,21 +57,16 @@ const getCode = (url, filename, callback) => {
 const languagesWithValidation = [
   "html",
   "javascript",
-  "typescript",
   "json",
   "css",
-  "less",
-  "scss"
+  "vbscript",
+  "jsx"
 ]
 
 const allLanguages = [
   ...languagesWithValidation,
-  "vb",
   "xml",
-  "yaml",
-  "python",
   "sql",
-  "powerquery",
   "markdown"
 ]
 
@@ -161,7 +120,6 @@ function App() {
     severity: "info"
   })
 
-  const editorRef = useRef(null);
   const debugConsoleFeed = false;
   
   const handleCodeFileChange = (e) => {
@@ -176,11 +134,6 @@ function App() {
     }
     reader.readAsText(file);
   };
-  
-  function handleEditorWillMount(mnc) {
-    // alert(JSON.stringify(window.MonacoEnvironment));
-    // alert(new URL("rsaf/rdo.js",import.meta.url));
-  }
 
   function saveCode() {
     if(editorFns.saveFilePath){
@@ -210,21 +163,6 @@ function App() {
         console.log("no file path");
     }
   }
-  /**
-   * To get the reference to the editor DOM object and add in key bindings
-   * @param {object} editor 
-   * @param {object} mnc 
-   */
-  function handleEditorDidMount(editor, mnc) {
-    editorRef.current = editor;
-    editor.addCommand(monaco.KeyMod.Alt | monaco.KeyMod.Shift | monaco.KeyCode.KeyF, () => {
-      editor.trigger('editor','editor.action.formatDocument');
-    });
-    editor.addCommand(monaco.KeyMod.Alt | monaco.KeyMod.Shift | monaco.KeyCode.KeyS, () => {
-      // Ctrl+S doesn't work. Neither does Ctrl+Shift+S.
-      saveCode();
-    });
-  };
 
   /**
    * Not entirely sure what this does yet.
@@ -307,11 +245,12 @@ function App() {
                     {addEditor === "diffEditor"
                     && 
                     <DiffEditor
-                      height="90vh"
-                      modified={code}
-                      original={originalCode}
-                      language={language}
-                      theme="vs-dark"
+                      value={
+                        [originalCode, code]
+                      }
+                      width="100%"
+                      mode={language}
+                      onChange={handleCodeChange}
                     />}
                     {addEditor === "apiTestor"
                     &&
@@ -320,35 +259,35 @@ function App() {
                       <Typography variant="subtitle2" color="#FFFFFF" sx={{ ml: "30px", mb: "4px"}}>
                         Body Data <Chip icon={<DataObject/>} label="JSON" color="secondary" size="small"/>
                       </Typography>
-                      <Editor
-                        height="40vh"
-                        language="json"
-                        theme="vs-dark"
-                        onValidate={handleEditorValidation}
-                        value={code}
-                        onChange={handleCodeChange}
-                        onMount={handleEditorDidMount}
-                        beforeMount={handleEditorWillMount}
-                        // Why {bracketPairColorization: {enabled: true}} doesn't work is weird.
-                        options={{ "bracketPairColorization.enabled": true }}
+                      <AceEditor
+                      mode="json"
+                      theme="monokai"
+                      value={code}
+                      onChange={handleCodeChange}
+                      width="100%"
+                      editorProps={{ $blockScrolling: true }}
+                      setOptions= {{
+                        enableBasicAutocompletion: true,
+                        enableLiveAutocompletion: true,
+                        enableSnippets: true
+                      }}
                       />
                     </>
                     }
                     {addEditor === null
                     &&
-                    <Editor
-                      height="90vh"
-                      defaultValue="/** CODE
-                      */"
-                      language={language}
-                      theme="vs-dark"
-                      onValidate={handleEditorValidation}
+                    <AceEditor
+                      mode={language}
+                      theme="monokai"
                       value={code}
                       onChange={handleCodeChange}
-                      onMount={handleEditorDidMount}
-                      beforeMount={handleEditorWillMount}
-                      // Why {bracketPairColorization: {enabled: true}} doesn't work is weird.
-                      options={{ "bracketPairColorization.enabled": true }}
+                      width="100%"
+                      editorProps={{ $blockScrolling: true }}
+                      setOptions= {{
+                        enableBasicAutocompletion: true,
+                        enableLiveAutocompletion: true,
+                        enableSnippets: true
+                      }}
                     />
                     }
               </Box>

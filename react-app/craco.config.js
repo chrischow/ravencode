@@ -1,5 +1,4 @@
 const InlineChunkHtmlPlugin = require('react-dev-utils/InlineChunkHtmlPlugin');
-const MonacoEditorWebpackPlugin = require('monaco-editor-webpack-plugin');
 const webpack = require('webpack');
 
 module.exports = {
@@ -8,11 +7,7 @@ module.exports = {
             add: [
                 [new webpack.optimize.LimitChunkCountPlugin({
                     maxChunks: 1
-                })],
-                [new MonacoEditorWebpackPlugin({
-                    filename: "[name].worker.txt",
-                    publicPath: "/rsaf/RDO/devtools/main/"
-                }), "append"]
+                })]
             ]
         },
         configure: (webpackConfig, {
